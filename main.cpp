@@ -1,7 +1,8 @@
 #include <iostream>
-#include "lib/openGA.hpp"
+#include "libs/openGA.hpp"
 
-int main() {
+int main()
+{
     std::cout << "Hello, World!" << std::endl;
     return 0;
 }
