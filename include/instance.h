@@ -19,9 +19,9 @@ private:
     Matrix2D<int> travelTimes;
 public:
 
-    [[nodiscard]] std::vector<Node> getProducers() const;
+    [[nodiscard]] const std::vector<Node> &getProducers() const;
 
-    [[nodiscard]] std::vector<Node> getClients() const;
+    [[nodiscard]] const std::vector<Node> &getClients() const;
 
     [[nodiscard]] std::vector<Node> getNodes() const;
 

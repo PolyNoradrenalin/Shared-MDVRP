@@ -1,11 +1,11 @@
 #include "instance.h"
 
-std::vector<Node> Instance::getProducers() const
+const std::vector<Node> &Instance::getProducers() const
 {
     return producers;
 }
 
-std::vector<Node> Instance::getClients() const
+const std::vector<Node> &Instance::getClients() const
 {
     return clients;
 }
