@@ -9,6 +9,7 @@
 # type B : temps de trajets en fonction de la distance, variation dépendant du sens
 # type C : temps de trajets en fonction de la distance avec une variation forcée
 import os
+import random
 from random import randint
 
 import numpy as np
@@ -56,6 +57,7 @@ def T1(file):
     for n in range(0, nombre_prod + nombre_client):
         file.write(str(coord[n][0]) + " ")
         file.write(str(coord[n][1]) + "\n")
+    return coord
 
 def T2(file):
     # rempli la matrice de distance
@@ -90,6 +92,7 @@ def T2(file):
     for n in range(0, nombre_prod + nombre_client):
         file.write(str(coord[n][0]) + " ")
         file.write(str(coord[n][1]) + "\n")
+    return coord
 
 def T3(file):
     # rempli la matrice de distance
@@ -122,6 +125,7 @@ def T3(file):
     for n in range(0, nombre_prod + nombre_client):
         file.write(str(coord[n][0]) + " ")
         file.write(str(coord[n][1]) + "\n")
+    return coord
 
 def TR(file):
     # rempli la matrice de distance
@@ -150,15 +154,55 @@ def TR(file):
     for n in range(0, nombre_prod + nombre_client):
         file.write(str(coord[n][0]) + " ")
         file.write(str(coord[n][1]) + "\n")
+    return coord
 
-def TA(file):
-    return
+def TA(file, coord):
+    for j in range(0, nombre_prod + nombre_client):
+        x_a = coord[j][0]
+        y_a = coord[j][1]
+        a = np.array((x_a, y_a))
+        for k in range(0, nombre_prod + nombre_client):
+            x_b = coord[k][0]
+            y_b = coord[k][1]
+            b = np.array((x_b, y_b))
+            distance = np.linalg.norm(a - b)
+            distance = round(distance)
+            travelTime = distance / 2
+            file.write(str(round(travelTime)) + " ")
+        file.write("\n")
 
-def TB(file):
-    return
+def TB(file, coord):
+    for j in range(0, nombre_prod + nombre_client):
+        x_a = coord[j][0]
+        y_a = coord[j][1]
+        a = np.array((x_a, y_a))
+        for k in range(0, nombre_prod + nombre_client):
+            x_b = coord[k][0]
+            y_b = coord[k][1]
+            b = np.array((x_b, y_b))
+            distance = np.linalg.norm(a - b)
+            distance = round(distance)
+            if j > k:
+                travelTime = (random.random() + 0.5) * distance / 2
+            else:
+                travelTime = distance / 2
+            file.write(str(round(travelTime)) + " ")
+        file.write("\n")
 
-def TC(file):
-    return
+def TC(file, coord):
+    for j in range(0, nombre_prod + nombre_client):
+        x_a = coord[j][0]
+        y_a = coord[j][1]
+        a = np.array((x_a, y_a))
+        for k in range(0, nombre_prod + nombre_client):
+            x_b = coord[k][0]
+            y_b = coord[k][1]
+            b = np.array((x_b, y_b))
+            distance = np.linalg.norm(a - b)
+            distance = round(distance)
+            travelTime = (random.random() + 0.5) * distance / 2
+            file.write(str(round(travelTime)) + " ")
+        file.write("\n")
 
 distTypes = [T1, T2, T3, TR]
 travelTimeTypes = [TA, TB, TC]
@@ -188,40 +232,9 @@ def generate_instances(instance_count: int):
                 f.write(str(nombre_prod) + "\n")
                 f.write(str(nombre_client) + "\n")
 
-                distTypes[i](f)
-                travelTimeTypes[j](f)
+                coords = distTypes[i](f)
+                travelTimeTypes[j](f, coords)
 
                 f.close()
 
 generate_instances(10)
-# genere 30 instances pour T1
-'''
-for i in range(0, 30):
-
-    
-    fichier.close()
-
-#######################################################################################  
-
-# genere 30 instances pour T2
-for i in range(0, 30):
-
-    
-    fichier.close()
-
-#######################################################################################  
-
-# genere 30 instances pour T3
-for i in range(0, 30):
-
-    
-    fichier.close()
-
-#######################################################################################  
-
-# genere 30 instances pour TR
-for i in range(0, 30):
-
-
-    
-    fichier.close()'''
