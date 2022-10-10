@@ -13,7 +13,6 @@ class Instance
 private:
     std::vector<Node> producers;
     std::vector<Node> clients;
-    std::vector<NodeType> nodeTypes;
 
     Matrix2D<int> distances;
     Matrix2D<int> travelTimes;
