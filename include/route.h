@@ -28,12 +28,6 @@ public:
      */
     Route(std::vector<Node> const &prodRoute, std::vector<Node> const &clientRoute);
 
-    /**
-     * Constructeur de recopie.
-     * @param r route à recopier.
-     */
-    Route(Route const &r);
-
     [[nodiscard]] const std::vector<Node> &getProdRoute() const;
 
     [[nodiscard]] const std::vector<Node> &getClientRoute() const;

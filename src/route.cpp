@@ -14,12 +14,6 @@ Route::Route(std::vector<Node> const &prodRoute, std::vector<Node> const &client
     this->clientRoute = std::vector<Node>(clientRoute);
 }
 
-Route::Route(const Route &r)
-{
-    this->prodRoute = std::vector(r.prodRoute);
-    this->clientRoute = std::vector(r.clientRoute);
-}
-
 inline const std::vector<Node> &Route::getProdRoute() const
 {
     return prodRoute;
