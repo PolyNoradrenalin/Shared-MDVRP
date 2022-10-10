@@ -5,7 +5,7 @@
 #include "route.h"
 
 /**
- * Solution individuelle pour la résolution du VRP.
+ * Solution individuelle pour la résolution du MD-VRP.
  */
 class Solution
 {
@@ -14,7 +14,7 @@ public:
     bool isValid;
     // La valeur de fitness correspondant à la distance.
     float distFitness;
-    // La valeur de fitness correspondant au temps nécéssaire pour parcourir la route.
+    // La valeur de fitness correspondant au temps nécessaire pour parcourir la route.
     float travelTimeFitness;
     // Routes des producteurs.
     std::vector<Route> routes;
