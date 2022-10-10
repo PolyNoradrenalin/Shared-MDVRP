@@ -20,12 +20,12 @@ Route::Route(const Route &r)
     this->clientRoute = std::vector(r.clientRoute);
 }
 
-inline std::vector<Node> Route::getProdRoute() const
+inline const std::vector<Node> &Route::getProdRoute() const
 {
     return prodRoute;
 }
 
-inline std::vector<Node> Route::getClientRoute() const
+inline const std::vector<Node> &Route::getClientRoute() const
 {
     return clientRoute;
 }

@@ -15,7 +15,6 @@ private:
 
     // Route du producteur chez les clients.
     std::vector<Node> clientRoute;
-
 public:
     /**
      * Constructeur par défaut.
@@ -35,9 +34,9 @@ public:
      */
     Route(Route const &r);
 
-    [[nodiscard]] std::vector<Node> getProdRoute() const;
+    [[nodiscard]] const std::vector<Node> &getProdRoute() const;
 
-    [[nodiscard]] std::vector<Node> getClientRoute() const;
+    [[nodiscard]] const std::vector<Node> &getClientRoute() const;
 
     [[nodiscard]] std::vector<Node> getRoute() const;
 };
