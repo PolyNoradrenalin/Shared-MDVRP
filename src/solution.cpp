@@ -1,8 +1,5 @@
 #include "solution.h"
 
-/**
- * Constructeur de l'objet Solution.
- */
 Solution::Solution()
 {
     isValid = false;

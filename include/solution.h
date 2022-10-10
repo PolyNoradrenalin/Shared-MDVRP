@@ -10,11 +10,18 @@
 class Solution
 {
 public:
+    // Détermine si la solution est valide.
     bool isValid;
+    // La valeur de fitness correspondant à la distance.
     float distFitness;
+    // La valeur de fitness correspondant au temps nécéssaire pour parcourir la route.
     float travelTimeFitness;
+    // Routes des producteurs.
     std::vector<Route> routes;
 
+    /**
+     * Constructeur de l'objet Solution.
+     */
     Solution();
 };
 
