@@ -23,14 +23,7 @@ public:
     [[nodiscard]] const std::vector<Node> &getClients() const;
 
     [[nodiscard]] std::vector<Node> getNodes() const;
-
-    /**
-     * Récupère le type du noeud donné.
-     * @param node
-     * @return Client ou Producteur selon le type du noeud
-     */
-    [[nodiscard]] NodeType getNodeType(Node node) const;
-
+    
     /**
      * Récupère la distance en entre deux noeuds.
      * @param start Départ de l'arc

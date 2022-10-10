@@ -17,11 +17,6 @@ std::vector<Node> Instance::getNodes() const
     return nodes;
 }
 
-NodeType Instance::getNodeType(Node node) const
-{
-    return nodeTypes[node.id];
-}
-
 int Instance::getDistance(Node start, Node dest) const
 {
     return distances[start.id][dest.id];
