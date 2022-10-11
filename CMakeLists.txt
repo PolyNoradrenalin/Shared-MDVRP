@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.23)
 project(S_MDVRP)
 include_directories(include)
+include_directories(libs)
 
 set(CMAKE_CXX_STANDARD 20)
 
