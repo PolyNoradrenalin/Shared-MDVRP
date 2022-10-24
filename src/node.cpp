@@ -6,7 +6,7 @@
  * @param x Position x du noeud.
  * @param y Position y du noeud.
  */
-Node::Node(int id, NodeType nodeType, float x, float y)
+Node::Node(int id, NodeType nodeType, double x, double y)
 {
     this->id = id;
     this->nodeType = nodeType;

@@ -13,9 +13,9 @@ public:
     // Détermine si la solution est valide.
     bool isValid;
     // La valeur de fitness correspondant à la distance.
-    float distFitness;
+    double distFitness;
     // La valeur de fitness correspondant au temps nécessaire pour parcourir la route.
-    float travelTimeFitness;
+    double travelTimeFitness;
     // Routes des producteurs.
     std::vector<Route> routes;
 

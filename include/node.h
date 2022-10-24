@@ -23,10 +23,10 @@ public:
     NodeType nodeType;
 
     // Cordonnées du nœud dans l'instance
-    float x;
-    float y;
+    double x;
+    double y;
 
-    Node(int id, NodeType nodeType, float x, float y);
+    Node(int id, NodeType nodeType, double x, double y);
 };
 
 #endif //S_MDVRP_NODE_H
