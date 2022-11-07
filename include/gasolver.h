@@ -33,7 +33,7 @@ private:
                        const std::vector<unsigned int> &pareto_front);
 
 public:
-    static GAType solveProblem(Instance instance);
+    static GAType& solveProblem(Instance instance);
 };
 
 #endif //S_MDVRP_GASOLVER_H

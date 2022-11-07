@@ -35,29 +35,29 @@ void GASolver::MOReportGeneration(int generation_number, const GenerationType &l
     // TODO: Implement
 }
 
-GAType GASolver::solveProblem(Instance instance)
+GAType &GASolver::solveProblem(Instance instance)
 {
     EA::Chronometer timer;
     timer.tic();
 
-    GAType gaObj;
-    gaObj.problem_mode = EA::GA_MODE::NSGA_III;
-    gaObj.multi_threading = true;
-    gaObj.idle_delay_us = 1; // switch between threads quickly
-    gaObj.verbose = false;
-    gaObj.population = 40;
-    gaObj.generation_max = 100;
-    gaObj.calculate_MO_objectives = calculateMOObjectives;
-    gaObj.init_genes = initGenes;
-    gaObj.eval_solution = evalSolution;
-    gaObj.mutate = mutate;
-    gaObj.crossover = crossover;
-    gaObj.MO_report_generation = MOReportGeneration;
-    gaObj.crossover_fraction = 0.7;
-    gaObj.mutation_rate = 0.4;
-    gaObj.solve();
+    auto *gaObj = new GAType();
+    gaObj->problem_mode = EA::GA_MODE::NSGA_III;
+    gaObj->multi_threading = true;
+    gaObj->idle_delay_us = 1; // switch between threads quickly
+    gaObj->verbose = false;
+    gaObj->population = 40;
+    gaObj->generation_max = 100;
+    gaObj->calculate_MO_objectives = calculateMOObjectives;
+    gaObj->init_genes = initGenes;
+    gaObj->eval_solution = evalSolution;
+    gaObj->mutate = mutate;
+    gaObj->crossover = crossover;
+    gaObj->MO_report_generation = MOReportGeneration;
+    gaObj->crossover_fraction = 0.7;
+    gaObj->mutation_rate = 0.4;
+    gaObj->solve();
 
     std::cout << "The problem is optimized in " << timer.toc() << " seconds." << std::endl;
 
-    return gaObj;
+    return *gaObj;
 }
