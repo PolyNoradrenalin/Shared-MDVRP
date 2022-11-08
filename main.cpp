@@ -1,8 +1,12 @@
 #include <iostream>
-#include "libs/openGA.hpp"
+#include "gasolver.h"
+#include "parser.h"
 
 int main()
 {
-    std::cout << "Hello, World!" << std::endl;
+    Parser parser("instances/I_10_50_T1-TA_0.txt");
+    Instance inst = parser.parse();
+    std::cout << "salut";
+
     return 0;
 }

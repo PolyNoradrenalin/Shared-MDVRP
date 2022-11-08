@@ -1,5 +1,7 @@
 #include "instance.h"
 
+#include <utility>
+
 const std::vector<Node> &Instance::getProducers() const
 {
     return producers;
@@ -25,4 +27,13 @@ int Instance::getDistance(Node start, Node dest) const
 int Instance::getTravelTime(Node start, Node dest) const
 {
     return travelTimes[start.id][dest.id];
+}
+
+Instance::Instance(std::vector<Node> producers, std::vector<Node> clients, Matrix2D<int> distances,
+                   Matrix2D<int> travelTimes)
+{
+    this->producers = std::move(producers);
+    this->clients = std::move(clients);
+    this->distances = std::move(distances);
+    this->travelTimes = std::move(travelTimes);
 }

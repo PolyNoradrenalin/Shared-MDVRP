@@ -17,6 +17,7 @@ private:
     Matrix2D<int> distances;
     Matrix2D<int> travelTimes;
 public:
+    Instance(std::vector<Node> producers, std::vector<Node> clients, Matrix2D<int> distances, Matrix2D<int> travelTimes);
 
     [[nodiscard]] const std::vector<Node> &getProducers() const;
 
