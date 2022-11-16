@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "route.h"
+#include "instance.h"
 
 /**
  * Solution individuelle pour la résolution du MD-VRP.

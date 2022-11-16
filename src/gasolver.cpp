@@ -14,19 +14,19 @@ bool GASolver::evalSolution(const Solution &p, MiddleCost &c)
 Solution GASolver::mutate(const Solution &X_base, const std::function<double(void)> &rnd01, double shrink_scale)
 {
     // TODO: Implement
-    return Solution();
+    return {};
 }
 
 Solution GASolver::crossover(const Solution &X1, const Solution &X2, const std::function<double(void)> &rnd01)
 {
     // TODO: Implement
-    return Solution();
+    return {};
 }
 
 std::vector<double> GASolver::calculateMOObjectives(const EA::Genetic<Solution, MiddleCost>::thisChromosomeType &X)
 {
     // TODO: Implement
-    return std::vector<double>();
+    return {};
 }
 
 void GASolver::MOReportGeneration(int generation_number, const GenerationType &last_generation,
@@ -35,7 +35,7 @@ void GASolver::MOReportGeneration(int generation_number, const GenerationType &l
     // TODO: Implement
 }
 
-GAType &GASolver::solveProblem(Instance instance)
+GAType &GASolver::solveProblem()
 {
     EA::Chronometer timer;
     timer.tic();

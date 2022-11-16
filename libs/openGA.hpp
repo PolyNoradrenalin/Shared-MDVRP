@@ -179,7 +179,7 @@ public:
 			}
 		}
 		else
-			data.clear();			
+			data.clear();
 	}
 
 	void print()
@@ -188,7 +188,7 @@ public:
 		{
 			for(unsigned int j=0;j<n_cols;j++)
 				cout<<"\t"<<(*this)(i,j);
-			
+
 			cout<<endl;
 		}
 		data.clear();
@@ -208,7 +208,7 @@ inline double norm2(const vector<double> &x_vec)
 
 inline int fast_combination_count(int N, int r)
 {
-	// if(N<r) // Commented to stop the warning  
+	// if(N<r) // Commented to stop the warning
 	// 	return 0;
 	if(r*2>N)
 		r=N-r;
@@ -241,7 +241,7 @@ protected:
 	bool initialized;
 public:
 
-	Chronometer() : 
+	Chronometer() :
 			initialized(false)
 	{
 	}
@@ -1207,7 +1207,7 @@ protected:
 		return false;
 	}
 
-	vector<vector<double>> 
+	vector<vector<double>>
 		generate_integerReferenceVectors(int dept,int N_division)
 	{
 		if(dept<1)
@@ -1320,7 +1320,7 @@ protected:
 				accepted = init_population_try(*p_generation0,X,index);
 				(*attemps)++;
 			}
-			active_thread=false;		
+			active_thread=false;
 		}
 	}
 
@@ -1333,7 +1333,7 @@ protected:
 	}
 
 	/****************************************************
-	* Perform a given method action (population 
+	* Perform a given method action (population
 	* initialization, or mutation/crossover) sequentially.
 	* The method is called one-by-one as much as the
 	* specified solutions are generated
@@ -1349,7 +1349,7 @@ protected:
 	}
 
 	/****************************************************
-	* Perform a given method action (population 
+	* Perform a given method action (population
 	* initialization, or mutation/crossover) in a thread pool.
 	* The method is called by any available thread.
 	****************************************************/
@@ -1444,13 +1444,13 @@ protected:
 
 
 	/****************************************************
-	* Perform a given method action (population 
+	* Perform a given method action (population
 	* initialization, or mutation/crossover) in a thread
 	* pool. The task is equally divided between threads.
 	* This approach has far less thread numbers and hence
 	* less far thread overhhead. However, as the thread
-	* allocation is not dynamic, the whole process waits 
-	* for the worst-case-scenario thread. 
+	* allocation is not dynamic, the whole process waits
+	* for the worst-case-scenario thread.
 	****************************************************/
 	template <void (thisType::*action_function)(thisGenerationType *p_generation0,int index_from,int index_to,unsigned int *attemps,std::atomic<bool> &active_thread)>
 	void static_thread_action(

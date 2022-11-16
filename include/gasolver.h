@@ -18,12 +18,37 @@ typedef EA::GenerationType<Solution, MiddleCost> GenerationType;
 class GASolver
 {
 private:
+    /**
+     * Initialise une solution p.
+     * @param p Solution à initialiser
+     * @param rnd01 Variable aléatoire
+     */
     static void initGenes(Solution &p, const std::function<double(void)> &rnd01);
 
+    /**
+     * Permet de récupérer le fitness d'une solution et d'évaluer si elle est valide.
+     * @param p Solution à évaluer
+     * @param c Coût (ou fitness) à calculer
+     * @return Vrai si la solution est acceptée, faux sinon.
+     */
     static bool evalSolution(const Solution &p, MiddleCost &c);
 
+    /**
+     * Fonction de mutation qui applique une mutation à une solution.
+     * @param X_base Solution de base
+     * @param rnd01 Variable aléatoire
+     * @param shrink_scale Non-utilisée
+     * @return La solution mutée.
+     */
     static Solution mutate(const Solution &X_base, const std::function<double(void)> &rnd01, double shrink_scale);
 
+    /**
+     * Applique une opération de crossover sur une solution à partir de deux solution de départ.
+     * @param X1 Solution 1
+     * @param X2 Solution 2
+     * @param rnd01 Variable aléatoire
+     * @return Solution modifiée
+     */
     static Solution crossover(const Solution &X1, const Solution &X2, const std::function<double(void)> &rnd01);
 
     static std::vector<double> calculateMOObjectives(const GAType::thisChromosomeType &X);
@@ -33,7 +58,9 @@ private:
                        const std::vector<unsigned int> &pareto_front);
 
 public:
-    static GAType& solveProblem(Instance instance);
+    static Instance &instance;
+
+    static GAType &solveProblem();
 };
 
 #endif //S_MDVRP_GASOLVER_H
