@@ -1,9 +1,11 @@
 #ifndef S_MDVRP_GASOLVER_H
 #define S_MDVRP_GASOLVER_H
 
-#include "solution.h"
 #include <vector>
+#include <random>
+#include "solution.h"
 #include "instance.h"
+#include "utils.h"
 #include "openGA.hpp"
 
 struct MiddleCost
@@ -58,9 +60,10 @@ private:
                        const std::vector<unsigned int> &pareto_front);
 
 public:
-    static Instance &instance;
+    inline static Instance instance = Instance(std::vector<Node>(), std::vector<Node>(), Matrix2D<int>(),
+                                               Matrix2D<int>());
 
-    static GAType &solveProblem();
+    static GAType &solveProblem(Instance instance);
 };
 
 #endif //S_MDVRP_GASOLVER_H
