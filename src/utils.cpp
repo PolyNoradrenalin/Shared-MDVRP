@@ -1,4 +1,3 @@
-#include <list>
 #include "utils.h"
 
 bool isSolutionValid(Solution &p)
@@ -14,7 +13,7 @@ bool producersCycling(Solution &p)
 }
 
 std::discrete_distribution<>
-getRandomIntDistributionWithExclusion(int minVal, int maxVal, const std::vector<int> excludedVals)
+getRandomIntDistribution(int minVal, int maxVal, const std::vector<int>& excludedVals)
 {
     std::vector<int> distVals(abs(maxVal - minVal));
     std::fill(distVals.begin(), distVals.end(), 1);
@@ -36,19 +35,18 @@ std::vector<Node> removeSideBySideDuplicatesInVector(std::vector<Node> vector)
 {
     std::list<Node> dest(vector.begin(), vector.end());
 
-    for (int i = 0; i < vector.size() - 1; i++)
+    for (auto it = dest.begin(); it != std::prev(dest.end()); ++it)
     {
-        if (vector.size() > 1)
+        if (dest.size() > 1 && std::distance(dest.begin(), it) != dest.size())
         {
-            if (vector.at(i).id == vector.at(i + 1).id)
+            if (it->id == std::next(it)->id)
             {
-                auto iterator = dest.begin();
-                std::advance(iterator, i);
-                dest.erase(iterator);
-                i--;
+                it = dest.erase(it);
+                it = std::prev(it);
+
             }
         }
     }
 
-    return vector;
+    return std::vector<Node> {std::begin(dest), std::end(dest)};
 }

@@ -3,6 +3,8 @@
 
 #include "solution.h"
 #include <random>
+#include <iostream>
+#include <list>
 
 /**
  * Checks if the solution is valid/feasible.
@@ -26,7 +28,7 @@ bool producersCycling(Solution &p);
  * @return Entier entre minVal et maxVal qui n'appartient pas à excludedVals.
  */
 std::discrete_distribution<>
-getRandomIntDistributionWithExclusion(int minVal, int maxVal, std::vector<int> excludedVals);
+getRandomIntDistribution(int minVal, int maxVal, const std::vector<int>& excludedVals);
 
 /**
  * Filtre un vector en enlevant les duplicats qui sont côte-à-côte.
