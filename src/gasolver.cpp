@@ -9,25 +9,29 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
     std::uniform_int_distribution<> producerDistribution(0, (int) instance.getProducers().size());
     std::uniform_int_distribution<> clientDistribution(0, (int) instance.getClients().size());
 
-    std::cout << instance.getProducers().size() << std::endl;
+    std::cout << "Number of Producers: " << instance.getProducers().size() << std::endl;
+    std::cout << "Number of Clients: " << instance.getClients().size() << std::endl;
 
-    // Générer la route de livraison aux autres producteurs pour chaque producteur
+    std::vector<Route> routes;
+
+    // Générer la route de livraison aux autres producteurs et clients pour chaque producteur
     for (int prodId = 0; prodId < instance.getProducers().size(); prodId++)
     {
-        // Route qui sera générée
+        // Route de livraison aux producteurs
         std::vector<Node> prodRoute;
 
         // Taille de la route des producteurs
-        int nbProds = producerDistribution(gen);
+        int prodRouteLength = producerDistribution(gen);
 
-        std::vector<int> excludedVals(nbProds);
-        excludedVals.push_back(prodId);
+        std::cout << "Generating producer route with " << prodRouteLength << " producers for producer " << prodId << "." << std::endl;
+
+        std::vector<int> excludedVals{prodId};
 
         // Créer la distribution aléatoire permettant de faire le tirage d'un producteur
-        auto distrib = getRandomIntDistributionWithExclusion(0, (int) instance.getProducers().size(), excludedVals);
+        auto distrib = getRandomIntDistribution(0, (int) instance.getProducers().size(), excludedVals);
 
         // Générer la route du producteur
-        for (int j = 0; j < nbProds; j++)
+        for (int j = 0; j < prodRouteLength; j++)
         {
             // Ajoute le nœud à la route du producteur
             prodRoute.push_back(instance.getProducers().at(distrib(gen)));
@@ -36,17 +40,48 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
         // Enlever les duplicats côte à côte de la liste
         prodRoute = removeSideBySideDuplicatesInVector(prodRoute);
 
-        std::cout << "Id prod: " << prodId << std::endl << prodId << "->";
+        std::cout << "Producers: " << prodId << "->";
         for (Node n: prodRoute)
         {
             std::cout << n.id << "->";
         }
         std::cout << prodId << std::endl;
 
+        // Route de livraison aux clients
+        std::vector<Node> clientRoute;
 
+        // Taille de la route de livraison aux clients
+        int clientRouteLength = clientDistribution(gen);
 
-        // Générer la route client
+        std::cout << "Generating client route with " << clientRouteLength << " clients for producer " << prodId << "." << std::endl;
 
+        distrib = getRandomIntDistribution(0, (int) instance.getClients().size(), std::vector<int>{});
+
+        // Générer la route de livraison aux clients du producteur
+        for (int j = 0; j < clientRouteLength; j++)
+        {
+            // Ajoute le nœud à la route de livraison aux clients
+            clientRoute.push_back(instance.getClients().at(distrib(gen)));
+        }
+
+        routes.emplace_back(prodRoute, clientRoute);
+
+        std::cout << "Clients: " << prodId << "->";
+        for (Node n: clientRoute)
+        {
+            std::cout << n.id << "->";
+        }
+        std::cout << prodId << std::endl;
+    }
+
+    // On ajoute la route à la solution p
+    p.routes = routes;
+
+    // On rajoute des clients dans un producteur aléatoire jusqu'à ce que la solution soit valide
+    while (!isSolutionValid(p))
+    {
+        // TODO: Fill a random producer's client route with a random client in order to make the solution valid.
+        // TODO: Think of other ways to make the initial solution valid.
     }
 }
 
