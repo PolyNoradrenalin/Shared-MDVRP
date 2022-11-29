@@ -9,8 +9,10 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
     std::uniform_int_distribution<> producerDistribution(0, (int) instance.getProducers().size());
     std::uniform_int_distribution<> clientDistribution(0, (int) instance.getClients().size());
 
+    std::cout << instance.getProducers().size() << std::endl;
+
     // Générer la route de livraison aux autres producteurs pour chaque producteur
-    for (int i = 0; i < instance.getProducers().size(); i++)
+    for (int prodId = 0; prodId < instance.getProducers().size(); prodId++)
     {
         // Route qui sera générée
         std::vector<Node> prodRoute;
@@ -19,18 +21,31 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
         int nbProds = producerDistribution(gen);
 
         std::vector<int> excludedVals(nbProds);
-        excludedVals.push_back(i);
+        excludedVals.push_back(prodId);
 
         // Créer la distribution aléatoire permettant de faire le tirage d'un producteur
         auto distrib = getRandomIntDistributionWithExclusion(0, (int) instance.getProducers().size(), excludedVals);
 
-        // Générer la route
+        // Générer la route du producteur
         for (int j = 0; j < nbProds; j++)
         {
             // Ajoute le nœud à la route du producteur
             prodRoute.push_back(instance.getProducers().at(distrib(gen)));
-            std::cout << prodRoute.end()->id;
         }
+
+        // Enlever les duplicats côte à côte de la liste
+        prodRoute = removeSideBySideDuplicatesInVector(prodRoute);
+
+        std::cout << "Id prod: " << prodId << std::endl << prodId << "->";
+        for (Node n: prodRoute)
+        {
+            std::cout << n.id << "->";
+        }
+        std::cout << prodId << std::endl;
+
+
+
+        // Générer la route client
 
     }
 }

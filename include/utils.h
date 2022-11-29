@@ -28,4 +28,11 @@ bool producersCycling(Solution &p);
 std::discrete_distribution<>
 getRandomIntDistributionWithExclusion(int minVal, int maxVal, std::vector<int> excludedVals);
 
+/**
+ * Filtre un vector en enlevant les duplicats qui sont côte-à-côte.
+ * @param vector Vecteur à filtrer
+ * @return Vecteur filtré
+ */
+std::vector<Node> removeSideBySideDuplicatesInVector(std::vector<Node> vector);
+
 #endif //S_MDVRP_UTILS_H

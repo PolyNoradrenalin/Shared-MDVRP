@@ -1,3 +1,4 @@
+#include <list>
 #include "utils.h"
 
 bool isSolutionValid(Solution &p)
@@ -29,4 +30,25 @@ getRandomIntDistributionWithExclusion(int minVal, int maxVal, const std::vector<
     std::discrete_distribution<> distribution(distVals.begin(), distVals.end());
 
     return distribution;
+}
+
+std::vector<Node> removeSideBySideDuplicatesInVector(std::vector<Node> vector)
+{
+    std::list<Node> dest(vector.begin(), vector.end());
+
+    for (int i = 0; i < vector.size() - 1; i++)
+    {
+        if (vector.size() > 1)
+        {
+            if (vector.at(i).id == vector.at(i + 1).id)
+            {
+                auto iterator = dest.begin();
+                std::advance(iterator, i);
+                dest.erase(iterator);
+                i--;
+            }
+        }
+    }
+
+    return vector;
 }
