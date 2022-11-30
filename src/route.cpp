@@ -1,7 +1,5 @@
 #include "route.h"
 
-#include <utility>
-
 Route::Route()
 {
     this->prodRoute = std::vector<Node>();
@@ -12,16 +10,6 @@ Route::Route(std::vector<Node> const &prodRoute, std::vector<Node> const &client
 {
     this->prodRoute = std::vector<Node>(prodRoute);
     this->clientRoute = std::vector<Node>(clientRoute);
-}
-
-inline const std::vector<Node> &Route::getProdRoute() const
-{
-    return prodRoute;
-}
-
-inline const std::vector<Node> &Route::getClientRoute() const
-{
-    return clientRoute;
 }
 
 inline std::vector<Node> Route::getRoute() const
