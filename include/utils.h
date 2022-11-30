@@ -7,18 +7,27 @@
 #include <list>
 
 /**
- * Checks if the solution is valid/feasible.
- * @param p Solution to check
- * @return <b>true</b> if valid, <b>false</b>otherwise/
+ * Vérifie si la solution est valide.
+ * @param solution Solution à vérifier
+ * @return <b>true</b> si valide, <b>false</b> sinon
  */
-bool isSolutionValid(Solution &p);
+bool isSolutionValid(Solution &solution);
 
+// TODO: Translate to french
 /**
  * Checks if the producers are producing a cycle which means they are interlocking themselves.
- * @param p Solution to check
+ * @param solution Solution to check
  * @return<b>true</b> if they are cycling (interlocking), <b>false</b>otherwise/
  */
-bool producersCycling(Solution &p);
+bool producersCycling(Solution &solution);
+
+/**
+ * Détecte quels clients ne sont pas desservis pour chaque producteur d'une solution.
+ * @param solution Solution à vérifier
+ * @return std::vector de taille nbProducteurs rempli avec des paires de <Route, std::vector<Node>> correspondant
+ * aux clients non-livrés par un producteur.
+ */
+std::vector<std::pair<Route, std::vector<Node>>> getInvalidRoutesIfAny(const Solution &solution, const Instance &i);
 
 /**
  * Génère un entier aléatoire dans [minVal; maxVal] en excluant les valeurs dans excludedVals.
@@ -35,6 +44,8 @@ getRandomIntDistribution(int minVal, int maxVal, const std::vector<int>& exclude
  * @param vector Vecteur à filtrer
  * @return Vecteur filtré
  */
-std::vector<Node> removeSideBySideDuplicatesInVector(std::vector<Node> vector);
+std::vector<Node> removeSideBySideDuplicatesInVector(const std::vector<Node> &vector);
+
+std::vector<Node> removeDuplicatesInVector(std::vector<Node> vector);
 
 #endif //S_MDVRP_UTILS_H
