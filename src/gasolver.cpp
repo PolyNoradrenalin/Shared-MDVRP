@@ -4,6 +4,7 @@
 
 void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
 {
+    // Création des générateurs de nombres aléatoires
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> producerDistribution(0, (int) instance.getProducers().size());
@@ -12,6 +13,7 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
     std::cout << "Number of Producers: " << instance.getProducers().size() << std::endl;
     std::cout << "Number of Clients: " << instance.getClients().size() << std::endl;
 
+    // Ensemble de routes vides
     std::vector<Route> routes;
 
     // Générer la route de livraison aux autres producteurs et clients pour chaque producteur
@@ -23,7 +25,7 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
         // Taille de la route des producteurs
         int prodRouteLength = producerDistribution(gen);
 
-        std::cout << "Generating producer route with " << prodRouteLength << " producers for producer " << prodId << "." << std::endl;
+        std::cout << "Generating producer route with " << prodRouteLength << " producers for producer " << prodId << "..." << std::endl;
 
         std::vector<int> excludedVals{prodId};
 
@@ -40,20 +42,13 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
         // Enlever les duplicats côte à côte de la liste
         prodRoute = removeSideBySideDuplicatesInVector(prodRoute);
 
-        std::cout << "Producers: " << prodId << "->";
-        for (Node n: prodRoute)
-        {
-            std::cout << n.id << "->";
-        }
-        std::cout << prodId << std::endl;
-
         // Route de livraison aux clients
         std::vector<Node> clientRoute;
 
         // Taille de la route de livraison aux clients
         int clientRouteLength = clientDistribution(gen);
 
-        std::cout << "Generating client route with " << clientRouteLength << " clients for producer " << prodId << "." << std::endl;
+        std::cout << "Generating client route with " << clientRouteLength << " clients for producer " << prodId << "..." << std::endl;
 
         distrib = getRandomIntDistribution(0, (int) instance.getClients().size(), std::vector<int>{});
 
@@ -64,24 +59,69 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
             clientRoute.push_back(instance.getClients().at(distrib(gen)));
         }
 
-        routes.emplace_back(prodRoute, clientRoute);
+        // Enlever les duplicats côte à côte de la liste
+        clientRoute = removeSideBySideDuplicatesInVector(clientRoute);
 
-        std::cout << "Clients: " << prodId << "->";
-        for (Node n: clientRoute)
-        {
-            std::cout << n.id << "->";
-        }
-        std::cout << prodId << std::endl;
+        routes.emplace_back(prodRoute, clientRoute);
     }
 
     // On ajoute la route à la solution p
     p.routes = routes;
 
-    // On rajoute des clients dans un producteur aléatoire jusqu'à ce que la solution soit valide
-    while (!isSolutionValid(p))
+    // On rajoute des clients pour que la solution soit valide
+    std::vector<Route> fixedRoutes;
+    auto missingClientsPerProducer = getInvalidRoutesIfAny(p, instance);
+    int routeIndex = 0;
+
+    // On itère sur chaque paire <route, liste des clients non-livrés> pour les ajouter à la route
+    for (const auto &clientPair : missingClientsPerProducer)
     {
-        // TODO: Fill a random producer's client route with a random client in order to make the solution valid.
-        // TODO: Think of other ways to make the initial solution valid.
+        if (routes.size() < routeIndex)
+        {
+            std::cerr << "An error has occurred during the reparation of initialized solution." << std::endl;
+            throw std::exception();
+        }
+        std::vector<Node> clientsRoute = p.routes[routeIndex].clientRoute;
+
+        if (clientPair.second.empty())
+        {
+            continue;
+        }
+
+        for (auto missingClient : clientPair.second)
+        {
+            clientsRoute.push_back(missingClient);
+        }
+
+        fixedRoutes.emplace_back(clientPair.first.prodRoute, clientsRoute);
+
+        routeIndex++;
+    }
+
+    // On ajoute la route réparée à la solution p
+    p.routes = fixedRoutes;
+
+    std::cout << "DONE GENERATING SOLUTION, FINAL RESULT: " << std::endl;
+
+    // Print to console
+    int count = 0;
+    for (const auto& prod: p.routes)
+    {
+        std::cout << "Producers: " << count << "->";
+        for (Node n: prod.prodRoute)
+        {
+            std::cout << n.id << "->";
+        }
+        std::cout << count << std::endl;
+
+        std::cout << "Clients: " << count << "->";
+        for (Node n: prod.clientRoute)
+        {
+            std::cout << n.id << "->";
+        }
+        std::cout << count << std::endl;
+
+        count++;
     }
 }
 
