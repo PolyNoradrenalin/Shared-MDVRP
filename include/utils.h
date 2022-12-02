@@ -5,6 +5,7 @@
 #include <random>
 #include <iostream>
 #include <list>
+#include <functional>
 
 /**
  * Vérifie si la solution est valide.
@@ -51,5 +52,14 @@ std::vector<Node> removeSideBySideDuplicatesInVector(const std::vector<Node> &ve
  * @return Vecteur filtré, sans doublons
  */
 std::vector<Node> removeDuplicatesInVector(std::vector<Node> vector);
+
+/**
+ * Retourne un entier aléatoire entre deux entiers a et b
+ * @param a Borne inférieure de la valeur de retour
+ * @param b Borne supérieure de la valeur de retour
+ * @param rnd01 Fonction aléatoire donnant un nombre aléatoire entre 0 et 1
+ * @return Entier aléatoire entre a et b
+ */
+int randomIntInInterval(int a, int b, const std::function<double(void)> &rnd01);
 
 #endif //S_MDVRP_UTILS_H

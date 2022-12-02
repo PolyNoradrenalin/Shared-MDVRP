@@ -7,12 +7,14 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
     // Création des générateurs de nombres aléatoires
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> producerDistribution(0, (int) instance.getProducers().size());
-    std::uniform_int_distribution<> clientDistribution(0, (int) instance.getClients().size());
+    std::uniform_int_distribution<> producerDistribution(0, int(instance.getProducers().size()));
+    std::uniform_int_distribution<> clientDistribution(0, int(instance.getClients().size()));
 
-    std::cout << "Number of Producers: " << instance.getProducers().size() << std::endl;
-    std::cout << "Number of Clients: " << instance.getClients().size() << std::endl;
-
+    if (isVerbose)
+    {
+        std::cout << "Number of Producers: " << instance.getProducers().size() << std::endl;
+        std::cout << "Number of Clients: " << instance.getClients().size() << std::endl;
+    }
     // Ensemble de routes vides à initialiser
     std::vector<Route> routes;
 
@@ -25,13 +27,16 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
         // Taille de la route des producteurs
         int prodRouteLength = producerDistribution(gen);
 
-        std::cout << "Generating producer route with " << prodRouteLength << " producers for producer " << prodId
-                  << "..." << std::endl;
+        if (isVerbose)
+        {
+            std::cout << "Generating producer route with " << prodRouteLength << " producers for producer " << prodId
+                      << "..." << std::endl;
+        }
 
         std::vector<int> excludedVals{prodId};
 
         // Créer la distribution aléatoire permettant de faire le tirage d'un producteur
-        auto distrib = getRandomIntDistribution(0, (int) instance.getProducers().size(), excludedVals);
+        auto distrib = getRandomIntDistribution(0, int(instance.getProducers().size()), excludedVals);
 
         // Générer la route du producteur
         for (int j = 0; j < prodRouteLength; j++)
@@ -52,7 +57,7 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
         std::cout << "Generating client route with " << clientRouteLength << " clients for producer " << prodId << "..."
                   << std::endl;
 
-        distrib = getRandomIntDistribution(0, (int) instance.getClients().size(), std::vector<int>{});
+        distrib = getRandomIntDistribution(0, int(instance.getClients().size()), std::vector<int>{});
 
         // Générer la route de livraison aux clients du producteur
         for (int j = 0; j < clientRouteLength; j++)
@@ -81,7 +86,7 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
     // On itère sur chaque paire <route, liste des clients non-livrés> pour les ajouter à la route
     for (const auto &clientPair: missingClientsPerProducer)
     {
-        if (routes.size() < routeIndex)
+        if (routes.size() <= routeIndex)
         {
             std::cerr << "An error has occurred during the reparation of initialized solution." << std::endl;
             throw std::exception();
@@ -90,6 +95,7 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
 
         if (clientPair.second.empty())
         {
+            fixedRoutes.push_back(clientPair.first);
             continue;
         }
 
@@ -104,7 +110,8 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
     }
 
     // Si pas de cycles et si la solution est devenue valide, on l'indique comme valide
-    if (isSolutionValid(p)){
+    if (isSolutionValid(p))
+    {
         p.isValid = true;
     }
 
@@ -178,8 +185,40 @@ bool GASolver::evalSolution(const Solution &p, MiddleCost &c)
 
 Solution GASolver::mutate(const Solution &X_base, const std::function<double(void)> &rnd01, double shrink_scale)
 {
-    // TODO: Implement
-    return {};
+    Solution X_new = X_base;
+    // On récupère une route aléatoire pour effecteur la mutation
+    int prodIndex = randomIntInInterval(0, int(instance.getProducers().size()), rnd01);
+
+    if (rnd01() < 0.5)
+    {
+        std::vector<Node> r = X_base.routes.at(prodIndex).prodRoute;
+        // Appliquer la mutation sur les producteurs
+        if (r.size() > 1)
+        {
+            // Récupérer deux indices pour la mutation par échange
+            int index1 = randomIntInInterval(0, int(r.size()), rnd01);
+            int index2 = randomIntInInterval(0, int(r.size()), rnd01);
+
+            std::iter_swap(r.begin() + index1, r.begin() + index2);
+
+            X_new.routes.at(prodIndex).prodRoute = r;
+        }
+    } else
+    {
+        std::vector<Node> r = X_new.routes.at(prodIndex).clientRoute;
+        // Sinon appliquer la mutation sur la route de livraison aux clients
+        if (r.size() > 1)
+        {
+            // Récupérer deux indices pour la mutation par échange
+            int index1 = randomIntInInterval(0, int(r.size()) - 1, rnd01);
+            int index2 = randomIntInInterval(0, int(r.size()) - 1, rnd01);
+
+            std::iter_swap(r.begin() + index1, r.begin() + index2);
+
+            X_new.routes.at(prodIndex).clientRoute = r;
+        }
+    }
+    return X_new;
 }
 
 Solution GASolver::crossover(const Solution &X1, const Solution &X2, const std::function<double(void)> &rnd01)
@@ -190,14 +229,26 @@ Solution GASolver::crossover(const Solution &X1, const Solution &X2, const std::
 
 std::vector<double> GASolver::calculateMOObjectives(const EA::Genetic<Solution, MiddleCost>::thisChromosomeType &X)
 {
-    // TODO: Implement
-    return {};
+    return {
+            X.middle_costs.distanceCost,
+            X.middle_costs.travelTimeCost
+    };
 }
 
 void GASolver::MOReportGeneration(int generation_number, const GenerationType &last_generation,
                                   const std::vector<unsigned int> &pareto_front)
 {
-    // TODO: Implement
+    (void) last_generation;
+
+    std::cout << "Generation [" << generation_number << "], ";
+    std::cout << "Pareto-Front {";
+
+    for (unsigned int i = 0; i < pareto_front.size(); i++)
+    {
+        std::cout << (i > 0 ? "," : "");
+        std::cout << pareto_front[i];
+    }
+    std::cout << "}" << std::endl;
 }
 
 GAType &GASolver::solveProblem(Instance inst)
@@ -224,12 +275,15 @@ GAType &GASolver::solveProblem(Instance inst)
     gaObj->mutation_rate = 0.4;
     gaObj->solve();
     */
-    std::mt19937_64 rng; // random generator
+    std::random_device rd;
+    std::mt19937 e2(rd());
+    std::uniform_real_distribution<> dist(0, 1);
 
     Solution s;
-    initGenes(s, rng);
+    initGenes(s, [&dist, &e2]() { return dist(e2); });
     MiddleCost middleCost{};
     evalSolution(s, middleCost);
+    mutate(s, [&dist, &e2]() { return dist(e2); }, 0);
 
     std::cout << "The problem is optimized in " << timer.toc() << " seconds." << std::endl;
 

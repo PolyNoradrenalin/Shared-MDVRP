@@ -126,3 +126,15 @@ std::vector<Node> removeDuplicatesInVector(std::vector<Node> vector)
     vector.erase(std::unique(vector.begin(), vector.end()), vector.end());
     return vector;
 }
+
+int randomIntInInterval(int a, int b, const std::function<double(void)> &rnd01)
+{
+    if (a > b)
+    {
+        std::cerr
+                << "The upper boundary in the random int interval cannot be lower than the lower boundary. Boundary given: ["
+                << a << "; " << b << "]." << std::endl;
+        throw std::exception();
+    }
+    return int(rnd01() * (b - a + 1)) + a;
+}
