@@ -13,7 +13,7 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
     std::cout << "Number of Producers: " << instance.getProducers().size() << std::endl;
     std::cout << "Number of Clients: " << instance.getClients().size() << std::endl;
 
-    // Ensemble de routes vides
+    // Ensemble de routes vides à initialiser
     std::vector<Route> routes;
 
     // Générer la route de livraison aux autres producteurs et clients pour chaque producteur
@@ -39,7 +39,7 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
             prodRoute.push_back(instance.getProducers().at(distrib(gen)));
         }
 
-        // Enlever les duplicats côte à côte de la liste
+        // Enlever les doublons côte à côte de la liste (un trajet d'un point A au même point A est considéré comme instantané)
         prodRoute = removeSideBySideDuplicatesInVector(prodRoute);
 
         // Route de livraison aux clients
@@ -59,7 +59,7 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
             clientRoute.push_back(instance.getClients().at(distrib(gen)));
         }
 
-        // Enlever les duplicats côte à côte de la liste
+        // Enlever les doublons côte à côte de la liste (un trajet d'un point A au même point A est considéré comme instantané)
         clientRoute = removeSideBySideDuplicatesInVector(clientRoute);
 
         routes.emplace_back(prodRoute, clientRoute);
@@ -68,8 +68,9 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
     // On ajoute la route à la solution p
     p.routes = routes;
 
-    // On rajoute des clients pour que la solution soit valide
+    // On rajoute des clients pour que la solution devienne valide
     std::vector<Route> fixedRoutes;
+    // Cette variable permet de déterminer pour chaque producteur, quels clients n'ont pas été livrés
     auto missingClientsPerProducer = getInvalidRoutesIfAny(p, instance);
     int routeIndex = 0;
 

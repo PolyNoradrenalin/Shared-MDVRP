@@ -18,12 +18,13 @@ std::vector<std::pair<Route, std::vector<Node>>> getInvalidRoutesIfAny(const Sol
 
     // TODO: Discuss about first creating a delivery matrix to reduce duplicate computations
 
+    // On fait la vérification pour chaque producteur P1
     for (const auto &prodRoute1: solution.routes)
     {
-        // Se rappeler des clients que le producteur A a directement livrés
+        // Se rappeler des clients que le producteur P1 a directement livré
         std::vector<Node> deliveredList = removeDuplicatesInVector(prodRoute1.clientRoute);
 
-        // Itérer sur chaque producteur B qui reçoit les biens du producteur A
+        // Itérer sur chaque producteur P2 qui reçoit les biens du producteur P1
         for (const auto &prodRoute2: prodRoute1.prodRoute)
         {
             // Regarder dans tous les clients qui sont livrés
@@ -32,9 +33,9 @@ std::vector<std::pair<Route, std::vector<Node>>> getInvalidRoutesIfAny(const Sol
                 // Chercher si le client n'existe pas déjà dans deliveredList
                 auto id = client.id;
                 auto it = std::find_if(deliveredList.begin(), deliveredList.end(),
-                                           [id](const Node &obj) { return obj.id == id; });
+                                       [id](const Node &obj) { return obj.id == id; });
 
-                // S'il n'existe effectivement pas, on l'ajoute à deliveredList
+                // S'il n'existe effectivement pas, on l'ajoute à deliveredList pour indiquer que ce client est desservi
                 if (it == deliveredList.end())
                 {
                     deliveredList.push_back(client);
@@ -42,15 +43,15 @@ std::vector<std::pair<Route, std::vector<Node>>> getInvalidRoutesIfAny(const Sol
             }
         }
 
-        // On regarde si le producteur 1 a bien livré à tous les clients
+        // On regarde si le producteur P1 a bien livré à tous les clients
         if (deliveredList.size() == i.getClients().size())
         {
             // On ajoute une paire <Route, Vector vide> à returnVal
             returnVal.emplace_back(prodRoute1, std::vector<Node>{});
-        }
-            // Sinon, on ajoute une paire <Route, Vector contenant les nœuds non visités> à returnVal
-        else
+        } else
         {
+            // Sinon, on ajoute une paire <Route, Vector contenant les nœuds non visités> à returnVal
+
             // Rechercher d'abord les livraisons manquantes
             std::vector<Node> missingDeliveries;
 
@@ -59,18 +60,16 @@ std::vector<std::pair<Route, std::vector<Node>>> getInvalidRoutesIfAny(const Sol
                 // Chercher si le client n'existe pas dans deliveredList
                 auto id = client.id;
                 auto it = std::find_if(deliveredList.begin(), deliveredList.end(),
-                                           [id](const Node &obj) { return obj.id == id; });
+                                       [id](const Node &obj) { return obj.id == id; });
 
-                // S'il n'existe pas on l'ajoute à deliveredList
+                // S'il n'existe pas on l'ajoute à la liste des livraisons manquantes
                 if (it == deliveredList.end())
                 {
                     missingDeliveries.push_back(client);
                 }
             }
-
             returnVal.emplace_back(prodRoute1, missingDeliveries);
         }
-
     }
 
     return returnVal;
@@ -96,17 +95,22 @@ std::discrete_distribution<> getRandomIntDistribution(int minVal, int maxVal, co
 
 std::vector<Node> removeSideBySideDuplicatesInVector(const std::vector<Node> &vector)
 {
+    // On transforme le vector en std::list car il est beaucoup plus performant pour y effacer des éléments
+    // O(n) pour vector et O(1) pour list
+    // Source: https://stackoverflow.com/a/11599470
     std::list<Node> dest(vector.begin(), vector.end());
 
+    // Itérer sur chaque élément et le comparer à celui d'après
     for (auto it = dest.begin(); it != std::prev(dest.end()); ++it)
     {
+        // On vérifie qu'il y a bien un élément à l'indice 'n+1'
         if (dest.size() > 1 && std::distance(dest.begin(), it) != dest.size())
         {
+            // Si l'élément 'n' est identique à l'élément 'n+1', on efface celui à l'indice n et on recule le pointeur d'un indice
             if (it->id == std::next(it)->id)
             {
                 it = dest.erase(it);
                 it = std::prev(it);
-
             }
         }
     }
@@ -116,7 +120,9 @@ std::vector<Node> removeSideBySideDuplicatesInVector(const std::vector<Node> &ve
 
 std::vector<Node> removeDuplicatesInVector(std::vector<Node> vector)
 {
+    // On effectue un tri par ordre croissant selon les ids de chaque Node
     std::sort(vector.begin(), vector.end());
+    // On efface les doublons
     vector.erase(std::unique(vector.begin(), vector.end()), vector.end());
     return vector;
 }

@@ -21,7 +21,7 @@ class GASolver
 {
 private:
     /**
-     * Initialise une solution p.
+     * Initialise une solution p en générant les routes de livraison de chaque producteur.
      * @param p Solution à initialiser
      * @param rnd01 Variable aléatoire
      */

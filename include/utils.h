@@ -13,11 +13,10 @@
  */
 bool isSolutionValid(Solution &solution);
 
-// TODO: Translate to french
 /**
- * Checks if the producers are producing a cycle which means they are interlocking themselves.
- * @param solution Solution to check
- * @return<b>true</b> if they are cycling (interlocking), <b>false</b>otherwise/
+ * Vérifie si les producteurs produisent un cycle (ce qui générerait un deadlock).
+ * @param solution Solution à vérifier
+ * @return<b>true</b> s'ils cyclent, <b>false</b> sinon
  */
 bool producersCycling(Solution &solution);
 
