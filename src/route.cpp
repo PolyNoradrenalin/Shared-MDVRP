@@ -12,7 +12,7 @@ Route::Route(std::vector<Node> const &prodRoute, std::vector<Node> const &client
     this->clientRoute = std::vector<Node>(clientRoute);
 }
 
-inline std::vector<Node> Route::getRoute() const
+std::vector<Node> Route::getRoute() const
 {
     std::vector<Node> route(prodRoute);
     route.insert(route.end(), clientRoute.begin(), clientRoute.end());

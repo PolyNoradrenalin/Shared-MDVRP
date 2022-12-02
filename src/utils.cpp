@@ -1,12 +1,12 @@
 #include "utils.h"
 
-bool isSolutionValid(Solution &solution)
+bool isSolutionValid(const Solution &solution)
 {
     // TODO: Verify that all clients receive all products from the producers
     return !producersCycling(solution);
 }
 
-bool producersCycling(Solution &solution)
+bool producersCycling(const Solution &solution)
 {
     // TODO: Implement cycling detection algorithm
     return false;

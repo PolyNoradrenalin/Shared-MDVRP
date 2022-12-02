@@ -63,6 +63,10 @@ public:
     inline static Instance instance = Instance(std::vector<Node>(), std::vector<Node>(), Matrix2D<int>(),
                                                Matrix2D<int>());
 
+    inline static bool isVerbose = false;
+
+    inline static double biCriteriaRatio = 0.5;
+
     static GAType &solveProblem(Instance instance);
 };
 

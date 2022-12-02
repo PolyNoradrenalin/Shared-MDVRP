@@ -11,14 +11,14 @@
  * @param solution Solution à vérifier
  * @return <b>true</b> si valide, <b>false</b> sinon
  */
-bool isSolutionValid(Solution &solution);
+bool isSolutionValid(const Solution &solution);
 
 /**
  * Vérifie si les producteurs produisent un cycle (ce qui générerait un deadlock).
  * @param solution Solution à vérifier
  * @return<b>true</b> s'ils cyclent, <b>false</b> sinon
  */
-bool producersCycling(Solution &solution);
+bool producersCycling(const Solution &solution);
 
 /**
  * Détecte quels clients ne sont pas desservis pour chaque producteur d'une solution.

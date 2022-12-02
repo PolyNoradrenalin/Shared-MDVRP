@@ -25,7 +25,8 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
         // Taille de la route des producteurs
         int prodRouteLength = producerDistribution(gen);
 
-        std::cout << "Generating producer route with " << prodRouteLength << " producers for producer " << prodId << "..." << std::endl;
+        std::cout << "Generating producer route with " << prodRouteLength << " producers for producer " << prodId
+                  << "..." << std::endl;
 
         std::vector<int> excludedVals{prodId};
 
@@ -48,7 +49,8 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
         // Taille de la route de livraison aux clients
         int clientRouteLength = clientDistribution(gen);
 
-        std::cout << "Generating client route with " << clientRouteLength << " clients for producer " << prodId << "..." << std::endl;
+        std::cout << "Generating client route with " << clientRouteLength << " clients for producer " << prodId << "..."
+                  << std::endl;
 
         distrib = getRandomIntDistribution(0, (int) instance.getClients().size(), std::vector<int>{});
 
@@ -68,6 +70,8 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
     // On ajoute la route à la solution p
     p.routes = routes;
 
+    // TODO: Allow for the option to accept invalid solutions in initialisation
+    // TODO: Implement cycling fixing
     // On rajoute des clients pour que la solution devienne valide
     std::vector<Route> fixedRoutes;
     // Cette variable permet de déterminer pour chaque producteur, quels clients n'ont pas été livrés
@@ -75,7 +79,7 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
     int routeIndex = 0;
 
     // On itère sur chaque paire <route, liste des clients non-livrés> pour les ajouter à la route
-    for (const auto &clientPair : missingClientsPerProducer)
+    for (const auto &clientPair: missingClientsPerProducer)
     {
         if (routes.size() < routeIndex)
         {
@@ -89,7 +93,7 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
             continue;
         }
 
-        for (auto missingClient : clientPair.second)
+        for (auto missingClient: clientPair.second)
         {
             clientsRoute.push_back(missingClient);
         }
@@ -99,37 +103,77 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
         routeIndex++;
     }
 
+    // Si pas de cycles et si la solution est devenue valide, on l'indique comme valide
+    if (isSolutionValid(p)){
+        p.isValid = true;
+    }
+
     // On ajoute la route réparée à la solution p
     p.routes = fixedRoutes;
 
     std::cout << "DONE GENERATING SOLUTION, FINAL RESULT: " << std::endl;
 
-    // Print to console
-    int count = 0;
-    for (const auto& prod: p.routes)
+    // Print to console initialisation if verbose solution
+    if (isVerbose)
     {
-        std::cout << "Producers: " << count << "->";
-        for (Node n: prod.prodRoute)
+        int count = 0;
+        for (const auto &prod: p.routes)
         {
-            std::cout << n.id << "->";
-        }
-        std::cout << count << std::endl;
+            std::cout << "Route for producer " << count << std::endl;
+            std::cout << "Producer route: " << count << "->";
+            for (Node n: prod.prodRoute)
+            {
+                std::cout << n.id << "->";
+            }
+            std::cout << count << std::endl;
 
-        std::cout << "Clients: " << count << "->";
-        for (Node n: prod.clientRoute)
-        {
-            std::cout << n.id << "->";
-        }
-        std::cout << count << std::endl;
+            std::cout << "Client route: " << count << "->";
+            for (Node n: prod.clientRoute)
+            {
+                std::cout << n.id << "->";
+            }
+            std::cout << count << std::endl;
 
-        count++;
+            std::cout << "---------------------" << std::endl;
+
+            count++;
+        }
     }
 }
 
 bool GASolver::evalSolution(const Solution &p, MiddleCost &c)
 {
-    // TODO: Implement
-    return false;
+    // On vérifie la validité de la solution
+    if (!p.isValid)
+    {
+        return false;
+    }
+
+    // Si la solution est valide, on calcule les coûts moyens
+    c.distanceCost = 0;
+    c.travelTimeCost = 0;
+
+    for (const auto &route: p.routes)
+    {
+        auto fullRoute = route.getRoute();
+        for (auto it = fullRoute.begin(); it != std::prev(fullRoute.end()); ++it)
+        {
+            if (std::next(it) != fullRoute.end())
+            {
+                c.distanceCost += instance.getDistance(*it, *std::next(it));
+                c.travelTimeCost += instance.getTravelTime(*it, *std::next(it));
+            }
+        }
+    }
+
+    if (isVerbose)
+    {
+        std::cout << "Solution Fitness: " << std::endl;
+        std::cout << "Distance Cost: " << c.distanceCost << std::endl;
+        std::cout << "Travel Time Cost: " << c.travelTimeCost << std::endl;
+    }
+
+    return true;
 }
 
 Solution GASolver::mutate(const Solution &X_base, const std::function<double(void)> &rnd01, double shrink_scale)
@@ -184,6 +228,8 @@ GAType &GASolver::solveProblem(Instance inst)
 
     Solution s;
     initGenes(s, rng);
+    MiddleCost middleCost{};
+    evalSolution(s, middleCost);
 
     std::cout << "The problem is optimized in " << timer.toc() << " seconds." << std::endl;
 
