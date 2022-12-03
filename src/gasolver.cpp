@@ -337,9 +337,9 @@ GAType &GASolver::solveProblem(Instance inst)
     gaObj->problem_mode = EA::GA_MODE::NSGA_III;
     gaObj->multi_threading = true;
     gaObj->idle_delay_us = 1; // switch between threads quickly
-    gaObj->verbose = true;
+    gaObj->verbose = false;
     gaObj->population = 40;
-    gaObj->generation_max = 100;
+    gaObj->generation_max = 1000;
     gaObj->calculate_MO_objectives = calculateMOObjectives;
     gaObj->init_genes = initGenes;
     gaObj->eval_solution = evalSolution;
