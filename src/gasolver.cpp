@@ -54,9 +54,12 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
         // Taille de la route de livraison aux clients
         int clientRouteLength = clientDistribution(gen);
 
-        std::cout << "Generating client route with " << clientRouteLength << " clients for producer " << prodId << "..."
-                  << std::endl;
-
+        if (isVerbose)
+        {
+            std::cout << "Generating client route with " << clientRouteLength << " clients for producer " << prodId
+                      << "..."
+                      << std::endl;
+        }
         distrib = getRandomIntDistribution(0, int(instance.getClients().size()), std::vector<int>{});
 
         // Générer la route de livraison aux clients du producteur
@@ -118,8 +121,10 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
     // On ajoute la route réparée à la solution p
     p.routes = fixedRoutes;
 
-    std::cout << "DONE GENERATING SOLUTION, FINAL RESULT: " << std::endl;
-
+    if (isVerbose)
+    {
+        std::cout << "DONE GENERATING SOLUTION, FINAL RESULT: " << std::endl;
+    }
     // Print to console initialisation if verbose solution
     if (isVerbose)
     {
@@ -240,7 +245,8 @@ Solution GASolver::crossover(const Solution &X1, const Solution &X2, const std::
     // Si r1 vide, on va forcément utiliser r2
     if (r1.empty())
     {
-        useProducerRoute ? offspring.routes.at(prodIndex1).prodRoute = r2 : offspring.routes.at(prodIndex1).clientRoute = r2;
+        useProducerRoute ? offspring.routes.at(prodIndex1).prodRoute = r2 : offspring.routes.at(
+                prodIndex1).clientRoute = r2;
         return offspring;
     }
 
@@ -311,7 +317,11 @@ void GASolver::MOReportGeneration(int generation_number, const GenerationType &l
     for (unsigned int i = 0; i < pareto_front.size(); i++)
     {
         std::cout << (i > 0 ? "," : "");
-        std::cout << pareto_front[i];
+        std::cout << pareto_front[i] << std::endl;
+        std::cout << "Distance: " << last_generation.chromosomes.at(pareto_front[i]).middle_costs.distanceCost
+                  << std::endl;
+        std::cout << "Travel time: " << last_generation.chromosomes.at(pareto_front[i]).middle_costs.travelTimeCost
+                  << std::endl;
     }
     std::cout << "}" << std::endl;
 }
