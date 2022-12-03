@@ -185,46 +185,111 @@ bool GASolver::evalSolution(const Solution &p, MiddleCost &c)
 
 Solution GASolver::mutate(const Solution &X_base, const std::function<double(void)> &rnd01, double shrink_scale)
 {
-    Solution X_new = X_base;
+    // Exchange Mutation
+    Solution offspring = X_base;
     // On récupère une route aléatoire pour effecteur la mutation
-    int prodIndex = randomIntInInterval(0, int(instance.getProducers().size()), rnd01);
+    int prodIndex = randomIntInInterval(0, int(instance.getProducers().size()) - 1, rnd01);
 
-    if (rnd01() < 0.5)
+    bool useProducerRoute = (rnd01() < 0.5);
+
+    std::vector<Node> r;
+    r = (useProducerRoute ? X_base.routes.at(prodIndex).prodRoute : X_base.routes.at(prodIndex).clientRoute);
+    // Appliquer la mutation sur les producteurs
+    if (r.size() > 1)
     {
-        std::vector<Node> r = X_base.routes.at(prodIndex).prodRoute;
-        // Appliquer la mutation sur les producteurs
-        if (r.size() > 1)
-        {
-            // Récupérer deux indices pour la mutation par échange
-            int index1 = randomIntInInterval(0, int(r.size()), rnd01);
-            int index2 = randomIntInInterval(0, int(r.size()), rnd01);
+        // Récupérer deux indices pour la mutation par échange
+        int index1 = randomIntInInterval(0, int(r.size()) - 1, rnd01);
+        int index2 = randomIntInInterval(0, int(r.size()) - 1, rnd01);
 
-            std::iter_swap(r.begin() + index1, r.begin() + index2);
+        // Faire la mutation
+        std::iter_swap(r.begin() + index1, r.begin() + index2);
 
-            X_new.routes.at(prodIndex).prodRoute = r;
-        }
-    } else
-    {
-        std::vector<Node> r = X_new.routes.at(prodIndex).clientRoute;
-        // Sinon appliquer la mutation sur la route de livraison aux clients
-        if (r.size() > 1)
-        {
-            // Récupérer deux indices pour la mutation par échange
-            int index1 = randomIntInInterval(0, int(r.size()) - 1, rnd01);
-            int index2 = randomIntInInterval(0, int(r.size()) - 1, rnd01);
-
-            std::iter_swap(r.begin() + index1, r.begin() + index2);
-
-            X_new.routes.at(prodIndex).clientRoute = r;
-        }
+        // Remplacer l'ancienne route par la nouvelle
+        useProducerRoute ? offspring.routes.at(prodIndex).prodRoute = r : offspring.routes.at(
+                prodIndex).clientRoute = r;
     }
-    return X_new;
+
+    return offspring;
 }
 
 Solution GASolver::crossover(const Solution &X1, const Solution &X2, const std::function<double(void)> &rnd01)
 {
-    // TODO: Implement
-    return {};
+    // Ordered Crossover
+    Solution offspring = X1;
+
+    // On récupère une route aléatoire pour effectuer le crossover
+    int prodIndex1 = randomIntInInterval(0, int(instance.getProducers().size()) - 1, rnd01);
+    int prodIndex2 = randomIntInInterval(0, int(instance.getProducers().size()) - 1, rnd01);
+
+    std::vector<Node> r1;
+    std::vector<Node> r2;
+    bool useProducerRoute = (rnd01() < 0.5);
+
+    if (useProducerRoute)
+    {
+        // Appliquer le crossover à la route de livraison aux producteurs
+        r1 = X1.routes.at(prodIndex1).prodRoute;
+        r2 = X2.routes.at(prodIndex2).prodRoute;
+    } else
+    {
+        // Appliquer le crossover à la route de livraison aux clients
+        r1 = X1.routes.at(prodIndex1).clientRoute;
+        r2 = X2.routes.at(prodIndex2).clientRoute;
+    }
+
+    // Si r1 vide, on va forcément utiliser r2
+    if (r1.empty())
+    {
+        useProducerRoute ? offspring.routes.at(prodIndex1).prodRoute = r2 : offspring.routes.at(prodIndex1).clientRoute = r2;
+        return offspring;
+    }
+
+    std::vector<Node> r = r1;
+
+    // On prend la taille max du plus petit des deux routes
+    int substringUpperBounds = std::max(std::min(int(r1.size()) - 1, int(r2.size()) - 1), 0);
+
+    // Récupérer deux indices pour faire connaître l'intervalle utilisé pour l'Ordered Crossover
+    int index1 = randomIntInInterval(0, substringUpperBounds, rnd01);
+    int index2 = randomIntInInterval(index1, substringUpperBounds, rnd01);
+
+    // On copie le substring de r1 vers r
+    std::vector<Node> substring = {r1.begin() + index1, r1.begin() + index2 + 1};
+
+    // On enlève tous les éléments de r après index2
+    r = {r.begin(), r.begin() + index2 + 1};
+
+    // Itérer dans r2 et enlever une fois chaque élément de substring s'il existe
+    for (const auto &elem: substring)
+    {
+        auto it = std::find(r2.begin(), r2.end(), elem);
+
+        if (it != r2.end())
+        {
+            r2.erase(it);
+        }
+    }
+
+    // On complète les Nodes de r en dehors du substring par ceux de r2
+    int rCounter = 0;
+    for (const auto &elem: r2)
+    {
+        if (rCounter < index1)
+        {
+            // Remplacer élément si l'indice rCounter se situe avant les nodes de substring
+            r[rCounter] = elem;
+            rCounter++;
+        } else
+        {
+            // Sinon l'ajouter à la fin de la route
+            r.push_back(elem);
+        }
+    }
+
+    // Insérer la nouvelle route dans le descendant
+    useProducerRoute ? offspring.routes.at(prodIndex1).prodRoute = r : offspring.routes.at(prodIndex1).clientRoute = r;
+
+    return offspring;
 }
 
 std::vector<double> GASolver::calculateMOObjectives(const EA::Genetic<Solution, MiddleCost>::thisChromosomeType &X)
@@ -258,11 +323,11 @@ GAType &GASolver::solveProblem(Instance inst)
     timer.tic();
 
     auto *gaObj = new GAType();
-    /**
+
     gaObj->problem_mode = EA::GA_MODE::NSGA_III;
     gaObj->multi_threading = true;
     gaObj->idle_delay_us = 1; // switch between threads quickly
-    gaObj->verbose = false;
+    gaObj->verbose = true;
     gaObj->population = 40;
     gaObj->generation_max = 100;
     gaObj->calculate_MO_objectives = calculateMOObjectives;
@@ -274,19 +339,8 @@ GAType &GASolver::solveProblem(Instance inst)
     gaObj->crossover_fraction = 0.7;
     gaObj->mutation_rate = 0.4;
     gaObj->solve();
-    */
-    std::random_device rd;
-    std::mt19937 e2(rd());
-    std::uniform_real_distribution<> dist(0, 1);
-
-    Solution s;
-    initGenes(s, [&dist, &e2]() { return dist(e2); });
-    MiddleCost middleCost{};
-    evalSolution(s, middleCost);
-    mutate(s, [&dist, &e2]() { return dist(e2); }, 0);
 
     std::cout << "The problem is optimized in " << timer.toc() << " seconds." << std::endl;
-
 
     return *gaObj;
 }

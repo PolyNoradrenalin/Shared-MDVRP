@@ -7,9 +7,8 @@ int main()
     Parser parser("./instances/I_10_50_T1-TA_0.txt");
     Instance inst = parser.parse();
     std::cout << "INSTANCE LOADED" << std::endl;
-    GASolver::isVerbose = true;
+    GASolver::isVerbose = false;
     GASolver::solveProblem(inst);
-
 
     return 0;
 }

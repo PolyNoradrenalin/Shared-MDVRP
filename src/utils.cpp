@@ -101,14 +101,14 @@ std::vector<Node> removeSideBySideDuplicatesInVector(const std::vector<Node> &ve
     std::list<Node> dest(vector.begin(), vector.end());
 
     // Itérer sur chaque élément et le comparer à celui d'après
-    for (auto it = dest.begin(); it != std::prev(dest.end()); ++it)
+    for (auto it = dest.begin(); it != dest.end(); ++it)
     {
         // On vérifie qu'il y a bien un élément à l'indice 'n+1'
         if (dest.size() > 1 && std::distance(dest.begin(), it) != dest.size())
         {
-            // Si l'élément 'n' est identique à l'élément 'n+1', on efface celui à l'indice n et on recule le pointeur d'un indice
             if (it->id == std::next(it)->id)
             {
+                // Si l'élément 'n' est identique à l'élément 'n+1', on efface celui à l'indice n et on recule le pointeur d'un indice
                 it = dest.erase(it);
                 it = std::prev(it);
             }
@@ -136,5 +136,8 @@ int randomIntInInterval(int a, int b, const std::function<double(void)> &rnd01)
                 << a << "; " << b << "]." << std::endl;
         throw std::exception();
     }
-    return int(rnd01() * (b - a + 1)) + a;
+    double r = rnd01();
+    if (r == 1)
+        return b;
+    return int(r * (b - a + 1)) + a;
 }
