@@ -9,13 +9,13 @@
  */
 class Route
 {
-private:
+public:
     // Route de mutualisation du producteur.
     std::vector<Node> prodRoute;
 
     // Route du producteur chez les clients.
     std::vector<Node> clientRoute;
-public:
+
     /**
      * Constructeur par défaut.
      */
@@ -27,10 +27,6 @@ public:
      * @param clientRoute Route du producteur chez les clients.
      */
     Route(std::vector<Node> const &prodRoute, std::vector<Node> const &clientRoute);
-
-    [[nodiscard]] const std::vector<Node> &getProdRoute() const;
-
-    [[nodiscard]] const std::vector<Node> &getClientRoute() const;
 
     [[nodiscard]] std::vector<Node> getRoute() const;
 };

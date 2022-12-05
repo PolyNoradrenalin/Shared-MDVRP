@@ -12,11 +12,11 @@ class Solution
 {
 public:
     // Détermine si la solution est valide.
-    bool isValid;
+    bool isValid = false;
     // La valeur de fitness correspondant à la distance.
-    double distFitness;
+    double distFitness = 0;
     // La valeur de fitness correspondant au temps nécessaire pour parcourir la route.
-    double travelTimeFitness;
+    double travelTimeFitness = 0;
     // Routes des producteurs.
     std::vector<Route> routes;
 

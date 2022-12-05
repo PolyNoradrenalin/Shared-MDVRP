@@ -27,6 +27,14 @@ public:
     double y;
 
     Node(int id, NodeType nodeType, double x, double y);
+
+    bool operator== (const Node &other) const {
+        return id == other.id;
+    }
+
+    bool operator< (const Node &other) const {
+        return id < other.id;
+    }
 };
 
 #endif //S_MDVRP_NODE_H

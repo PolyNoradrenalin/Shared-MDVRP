@@ -24,7 +24,7 @@ Instance Parser::parse() const
 
     if (!filestream.is_open())
     {
-        std::cerr << "Erreur: une erreur est survenue lors de l'ouverture du fichier";
+        std::cerr << "Erreur: une erreur est survenue lors de l'ouverture du fichier" << std::endl;
         throw std::exception();
     }
     // Lecture du nombre de nœuds producteurs
