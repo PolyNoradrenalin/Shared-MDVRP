@@ -21,7 +21,7 @@ bool Solution::producersCycling()
         }
     }
 
-    boost::depth_first_search(g, boost::visitor(dfs));
+    boost::depth_first_search(g,dfs, );
     std::cout << dfs.GetCycles().size();
 
     return false;
