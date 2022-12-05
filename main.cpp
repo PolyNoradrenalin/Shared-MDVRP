@@ -12,16 +12,17 @@ int main()
     {
         nodes.emplace_back(i, Producer, 0, 0);
     }
-    Route r1 = Route({nodes[2], nodes[1], nodes[0], nodes[2]}, std::vector<Node>());
-    Route r2 = Route({nodes[0], nodes[1], nodes[2]}, std::vector<Node>());
-    Route r3 = Route({nodes[1], nodes[3], nodes[2]}, std::vector<Node>());
+    Route r1 = Route({nodes[0], nodes[1], nodes[2]}, std::vector<Node>());
+    Route r2 = Route({nodes[0], nodes[2]}, std::vector<Node>());
+    Route r3 = Route({nodes[1], nodes[2], nodes[3]}, std::vector<Node>());
+    Route r4 = Route({nodes[2], nodes[1], nodes[3]}, std::vector<Node>());
 
 
     sol.routes.emplace_back(r1);
-    // sol.routes.emplace_back(r2);
-    // sol.routes.emplace_back(r3);
+    sol.routes.emplace_back(r2);
+    sol.routes.emplace_back(r3);
+    sol.routes.emplace_back(r4);
 
     bool test = sol.producersCycling();
-    std::cout << test;
     return 0;
 }
