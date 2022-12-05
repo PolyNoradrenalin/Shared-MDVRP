@@ -114,10 +114,7 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
     }
 
     // Si pas de cycles et si la solution est devenue valide, on l'indique comme valide
-    if (isSolutionValid(p))
-    {
-        p.isValid = true;
-    }
+p.isValid = isSolutionValid(p);
 
     // On ajoute la route réparée à la solution p
     p.routes = fixedRoutes;
@@ -253,10 +250,10 @@ Solution GASolver::crossover(const Solution &X1, const Solution &X2, const std::
 
     std::vector<Node> r = r1;
 
-    // On prend la taille max du plus petit des deux routes
+    // On récupère le dernier indice de la plus petite des deux routes
     int substringUpperBounds = std::max(std::min(int(r1.size()) - 1, int(r2.size()) - 1), 0);
 
-    // Récupérer deux indices pour faire connaître l'intervalle utilisé pour l'Ordered Crossover
+    // On récupère les deux indices permettant l'Ordered Crossover tels que : 0 <= index1 <= index2 <= substringUpperBounds
     int index1 = randomIntInInterval(0, substringUpperBounds, rnd01);
     int index2 = randomIntInInterval(index1, substringUpperBounds, rnd01);
 
