@@ -36,7 +36,8 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
         std::vector<int> excludedVals{prodId};
 
         // Créer la distribution aléatoire permettant de faire le tirage d'un producteur
-        auto distrib = getRandomIntDistribution(0, int(instance.getProducers().size()), excludedVals);
+        std::discrete_distribution<> distrib = getRandomIntDistribution(0, int(instance.getProducers().size()),
+                                                                        excludedVals);
 
         // Générer la route du producteur
         for (int j = 0; j < prodRouteLength; j++)
@@ -102,7 +103,7 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
             continue;
         }
 
-        for (auto missingClient: clientPair.second)
+        for (Node missingClient: clientPair.second)
         {
             clientsRoute.push_back(missingClient);
         }
@@ -167,7 +168,7 @@ bool GASolver::evalSolution(const Solution &p, MiddleCost &c)
 
     for (const auto &route: p.routes)
     {
-        auto fullRoute = route.getRoute();
+        std::vector<Node> fullRoute = route.getRoute();
         for (auto it = fullRoute.begin(); it != std::prev(fullRoute.end()); ++it)
         {
             if (std::next(it) != fullRoute.end())

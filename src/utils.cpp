@@ -31,7 +31,7 @@ std::vector<std::pair<Route, std::vector<Node>>> getInvalidRoutesIfAny(const Sol
             for (const auto &client: solution.routes.at(prodRoute2.id).clientRoute)
             {
                 // Chercher si le client n'existe pas déjà dans deliveredList
-                auto id = client.id;
+                int id = client.id;
                 auto it = std::find_if(deliveredList.begin(), deliveredList.end(),
                                        [id](const Node &obj) { return obj.id == id; });
 
@@ -58,7 +58,7 @@ std::vector<std::pair<Route, std::vector<Node>>> getInvalidRoutesIfAny(const Sol
             for (const auto &client: i.getClients())
             {
                 // Chercher si le client n'existe pas dans deliveredList
-                auto id = client.id;
+                int id = client.id;
                 auto it = std::find_if(deliveredList.begin(), deliveredList.end(),
                                        [id](const Node &obj) { return obj.id == id; });
 
