@@ -8,14 +8,14 @@ int main()
     Instance inst = parser.parse();
     Solution sol = Solution();
     std::vector<Node> nodes = std::vector<Node>();
-    for (int i=0; i<5; i++)
+    for (int i = 0; i < 5; i++)
     {
         nodes.emplace_back(i, Producer, 0, 0);
     }
-    Route r1 = Route({nodes[0], nodes[1], nodes[2]}, std::vector<Node>());
-    Route r2 = Route({nodes[0], nodes[2]}, std::vector<Node>());
-    Route r3 = Route({nodes[1], nodes[2], nodes[3]}, std::vector<Node>());
-    Route r4 = Route({nodes[2], nodes[1], nodes[3]}, std::vector<Node>());
+    Route r1 = Route({nodes[1], nodes[2]}, std::vector<Node>());
+    Route r2 = Route({nodes[2]}, std::vector<Node>());
+    Route r3 = Route({nodes[3]}, std::vector<Node>());
+    Route r4 = Route({nodes[2], nodes[1]}, std::vector<Node>());
 
 
     sol.routes.emplace_back(r1);

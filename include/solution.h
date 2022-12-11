@@ -1,25 +1,27 @@
 #ifndef S_MDVRP_SOLUTION_H
 #define S_MDVRP_SOLUTION_H
+
 #include <vector>
 #include "route.h"
 #include "instance.h"
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/tiernan_all_cycles.hpp>
+#include <boost/graph/adjacency_matrix.hpp>
+#include <boost/graph/depth_first_search.hpp>
 #include <iostream>
 #include <stack>
 
-using Graph = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS, boost::property<boost::vertex_index_t, int>>;
+typedef boost::adjacency_matrix<boost::directedS> Graph;
+typedef std::exception cycle_exception;
 
-namespace boost { [[maybe_unused]] void renumber_vertex_indices(Graph const&); }
-
-class Visitor {
-private:
-    std::vector<std::set<int>>& cycles;
-
+class dfs_visitor : public boost::default_dfs_visitor
+{
 public:
-    explicit Visitor(std::vector<std::set<int>> &cycles);
+    dfs_visitor() = default;
 
-    [[maybe_unused]] void cycle(auto const& path, Graph const& g);
+    template<typename Vertex, typename Graph>
+    [[maybe_unused]] void back_edge(Vertex u, const Graph &g) const
+    {
+        throw cycle_exception();
+    }
 };
 
 
