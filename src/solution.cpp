@@ -7,6 +7,11 @@ Solution::Solution()
     travelTimeFitness = 0;
 }
 
+/**
+ * Utilise l'algorithme DFS (Depth First Search) sur le graphe d'attente de la solution. Si un cycle est détecté, cela
+ * implique un interblocage et donc une invalidité de la solution.
+ * @return Vrai si la solution a un cycle, non sinon
+ */
 bool Solution::producersCycling()
 {
     unsigned long long nbRoutes = this->routes.size();
