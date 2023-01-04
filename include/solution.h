@@ -4,6 +4,26 @@
 #include <vector>
 #include "route.h"
 #include "instance.h"
+#include <boost/graph/adjacency_matrix.hpp>
+#include <boost/graph/depth_first_search.hpp>
+#include <iostream>
+#include <stack>
+
+typedef boost::adjacency_matrix<boost::directedS> Graph;
+typedef std::exception cycle_exception;
+
+class dfs_visitor : public boost::default_dfs_visitor
+{
+public:
+    dfs_visitor() = default;
+
+    template<typename Vertex, typename Graph>
+    [[maybe_unused]] void back_edge(Vertex u, const Graph &g) const
+    {
+        throw cycle_exception();
+    }
+};
+
 
 /**
  * Solution individuelle pour la résolution du MD-VRP.
@@ -24,6 +44,13 @@ public:
      * Constructeur de l'objet Solution.
      */
     Solution();
+
+    /**
+     * Vérifie s'il y a un cycle dans les tournées de producteurs.
+     * @param p Solution à vérifier
+     * @return<b>true</b> s'il y a un cycle (interlocking), <b>false</b>sinon
+     */
+    bool producersCycling();
 };
 
 #endif //S_MDVRP_SOLUTION_H
