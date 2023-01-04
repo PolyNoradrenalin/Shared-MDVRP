@@ -19,7 +19,7 @@ bool Solution::producersCycling()
     for (int i = 0; i < nbRoutes; i++)
     {
         const Route& route = this->routes[i];
-        for (const Node& node : route.getProdRoute())
+        for (const Node& node : route.prodRoute)
         {
             boost::add_edge(i, node.id, g);
         }
