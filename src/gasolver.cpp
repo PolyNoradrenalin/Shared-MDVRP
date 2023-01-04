@@ -80,7 +80,6 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
     p.routes = routes;
 
     // TODO: Allow for the option to accept invalid solutions in initialisation
-    // TODO: Implement cycling fixing
     // On rajoute des clients pour que la solution devienne valide
     std::vector<Route> fixedRoutes;
     // Cette variable permet de déterminer pour chaque producteur, quels clients n'ont pas été livrés
@@ -114,7 +113,7 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
     }
 
     // Si pas de cycles et si la solution est devenue valide, on l'indique comme valide
-p.isValid = isSolutionValid(p);
+    p.isValid = p.producersCycling();
 
     // On ajoute la route réparée à la solution p
     p.routes = fixedRoutes;
@@ -212,6 +211,8 @@ Solution GASolver::mutate(const Solution &X_base, const std::function<double(voi
                 prodIndex).clientRoute = r;
     }
 
+    offspring.isValid = isSolutionValid(offspring, instance);
+
     return offspring;
 }
 
@@ -292,6 +293,8 @@ Solution GASolver::crossover(const Solution &X1, const Solution &X2, const std::
 
     // Insérer la nouvelle route dans le descendant
     useProducerRoute ? offspring.routes.at(prodIndex1).prodRoute = r : offspring.routes.at(prodIndex1).clientRoute = r;
+
+    offspring.isValid = isSolutionValid(offspring, instance);
 
     return offspring;
 }

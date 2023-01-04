@@ -1,16 +1,12 @@
 #include "utils.h"
 
-bool isSolutionValid(const Solution &solution)
+bool isSolutionValid(const Solution &solution, const Instance& instance)
 {
     // TODO: Verify that all clients receive all products from the producers
-    return !producersCycling(solution);
+    getInvalidRoutesIfAny(solution, instance);
+    return !solution.producersCycling();
 }
 
-bool producersCycling(const Solution &solution)
-{
-    // TODO: Implement cycling detection algorithm
-    return false;
-}
 
 std::vector<std::pair<Route, std::vector<Node>>> getInvalidRoutesIfAny(const Solution &solution, const Instance &i)
 {

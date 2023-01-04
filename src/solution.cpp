@@ -12,7 +12,7 @@ Solution::Solution()
  * implique un interblocage et donc une invalidité de la solution.
  * @return Vrai si la solution a un cycle, non sinon
  */
-bool Solution::producersCycling()
+bool Solution::producersCycling() const
 {
     unsigned long long nbRoutes = this->routes.size();
 

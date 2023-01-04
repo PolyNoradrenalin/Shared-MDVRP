@@ -50,7 +50,7 @@ public:
      * @param p Solution à vérifier
      * @return<b>true</b> s'il y a un cycle (interlocking), <b>false</b>sinon
      */
-    bool producersCycling();
+    bool producersCycling() const;
 };
 
 #endif //S_MDVRP_SOLUTION_H
