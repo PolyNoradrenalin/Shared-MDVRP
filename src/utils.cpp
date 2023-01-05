@@ -2,8 +2,6 @@
 
 bool isSolutionValid(const Solution &solution, const Instance& instance)
 {
-    // TODO: Verify that all clients receive all products from the producers
-
     return !solution.producersCycling() && getInvalidRoutesIfAny(solution, instance).empty();
 }
 
