@@ -24,6 +24,14 @@ bool isSolutionValid(const Solution &solution, const Instance& instance);
 std::vector<std::pair<Route, std::vector<Node>>> getInvalidRoutesIfAny(const Solution &solution, const Instance &i);
 
 /**
+ * Retourne les routes réparées d'une solution en rajoutant les clients manquants pour chaque producteur à leur route de livraison.
+ * @param p Solution à réparer
+ * @param instance Instance du problème
+ * @return std::vector<Route> les routes réparées
+ */
+std::vector<Route> fixInvalidRoutes(const Solution &p, const Instance &instance);
+
+/**
  * Génère un entier aléatoire dans [minVal; maxVal] en excluant les valeurs dans excludedVals.
  * @param minVal Valeur minimale du nombre aléatoire généré
  * @param maxVal Valeur maximale du nombre aléatoire généré

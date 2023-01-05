@@ -78,43 +78,12 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
     p.routes = routes;
 
     // TODO: Allow for the option to accept invalid solutions in initialisation
-    // On rajoute des clients pour que la solution devienne valide
-    std::vector<Route> fixedRoutes;
-    // Cette variable permet de déterminer pour chaque producteur, quels clients n'ont pas été livrés
-    auto missingClientsPerProducer = getInvalidRoutesIfAny(p, instance);
-    int routeIndex = 0;
-
-    // On itère sur chaque paire <route, liste des clients non-livrés> pour les ajouter à la route
-    for (const auto &clientPair: missingClientsPerProducer)
-    {
-        if (routes.size() <= routeIndex)
-        {
-            std::cerr << "An error has occurred during the reparation of initialized solution." << std::endl;
-            throw std::exception();
-        }
-        std::vector<Node> clientsRoute = p.routes[routeIndex].clientRoute;
-
-        if (clientPair.second.empty())
-        {
-            fixedRoutes.push_back(clientPair.first);
-            continue;
-        }
-
-        for (Node missingClient: clientPair.second)
-        {
-            clientsRoute.push_back(missingClient);
-        }
-
-        fixedRoutes.emplace_back(clientPair.first.prodRoute, clientsRoute);
-
-        routeIndex++;
-    }
-
-    // Si pas de cycles et si la solution est devenue valide, on l'indique comme valide
-    p.isValid = p.producersCycling();
-
+    std::vector<Route> fixedRoutes = fixInvalidRoutes(p, instance);
     // On ajoute la route réparée à la solution p
     p.routes = fixedRoutes;
+
+    // Si pas de cycles, on indique la solution comme valide
+    p.isValid = p.producersCycling();
 
     if (isVerbose)
     {
@@ -218,12 +187,13 @@ Solution GASolver::crossover(const Solution &X1, const Solution &X2, const std::
 {
     // Ordered Crossover
     Solution offspring = X1;
+    int size = int(instance.getProducers().size());
 
-    for (int i = 0; i < int(instance.getProducers().size()); i++)
+    for (int i = 0; i < size; i++)
     {
         // On récupère une route aléatoire pour effectuer le crossover
-        int prodIndex1 = randomIntInInterval(0, int(instance.getProducers().size()) - 1, rnd01);
-        int prodIndex2 = randomIntInInterval(0, int(instance.getProducers().size()) - 1, rnd01);
+        int prodIndex1 = randomIntInInterval(0, size - 1, rnd01);
+        int prodIndex2 = randomIntInInterval(0, size - 1, rnd01);
 
         std::vector<Node> r1;
         std::vector<Node> r2;
@@ -295,6 +265,9 @@ Solution GASolver::crossover(const Solution &X1, const Solution &X2, const std::
         useProducerRoute ? offspring.routes.at(prodIndex1).prodRoute = r : offspring.routes.at(
                 prodIndex1).clientRoute = r;
     }
+
+    std::vector<Route> fixedRoutes = fixInvalidRoutes(offspring, instance);
+    offspring.routes = fixedRoutes;
 
     offspring.isValid = isSolutionValid(offspring, instance);
 

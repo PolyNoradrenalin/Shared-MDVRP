@@ -135,3 +135,40 @@ int randomIntInInterval(int a, int b, const std::function<double(void)> &rnd01)
         return b;
     return int(r * (b - a + 1)) + a;
 }
+
+std::vector<Route> fixInvalidRoutes(const Solution &p, const Instance &instance)
+{
+    // On rajoute des clients pour que la solution devienne valide
+    std::vector<Route> fixedRoutes;
+    // Cette variable permet de déterminer pour chaque producteur, quels clients n'ont pas été livrés
+    auto missingClientsPerProducer = getInvalidRoutesIfAny(p, instance);
+    int routeIndex = 0;
+
+    // On itère sur chaque paire <route, liste des clients non-livrés> pour les ajouter à la route
+    for (const auto &clientPair: missingClientsPerProducer)
+    {
+        if (p.routes.size() <= routeIndex)
+        {
+            std::cerr << "An error has occurred during the reparation of initialized solution." << std::endl;
+            throw std::exception();
+        }
+        std::vector<Node> clientsRoute = p.routes[routeIndex].clientRoute;
+
+        if (clientPair.second.empty())
+        {
+            fixedRoutes.push_back(clientPair.first);
+            continue;
+        }
+
+        for (Node missingClient: clientPair.second)
+        {
+            clientsRoute.push_back(missingClient);
+        }
+
+        fixedRoutes.emplace_back(clientPair.first.prodRoute, clientsRoute);
+
+        routeIndex++;
+    }
+
+    return fixedRoutes;
+}
