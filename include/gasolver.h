@@ -3,10 +3,15 @@
 
 #include <vector>
 #include <random>
+#include <utility>
+#include <fstream>
 #include "solution.h"
 #include "instance.h"
 #include "utils.h"
 #include "openGA.hpp"
+#include "json.hpp"
+
+using json = nlohmann::json;
 
 struct MiddleCost
 {
@@ -67,7 +72,7 @@ public:
 
     inline static double biCriteriaRatio = 0.5;
 
-    static GAType &solveProblem(Instance instance);
+    static GAType &solveProblem(Instance instance, const std::string& jsonFilePath);
 };
 
 #endif //S_MDVRP_GASOLVER_H

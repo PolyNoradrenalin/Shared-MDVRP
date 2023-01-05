@@ -8,7 +8,9 @@ int main()
     Instance inst = parser.parse();
     std::cout << "INSTANCE LOADED" << std::endl;
     GASolver::isVerbose = false;
-    GASolver::solveProblem(inst);
+    auto jsonPath = "params.json";
+    GASolver::solveProblem(inst, jsonPath);
+
 
     return 0;
 }

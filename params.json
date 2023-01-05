@@ -1,0 +1,6 @@
+{
+  "population": 40,
+  "generation_max": 1000,
+  "crossover_rate": 0.7,
+  "mutation_rate": 0.4
+}
