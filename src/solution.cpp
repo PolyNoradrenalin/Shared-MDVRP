@@ -3,8 +3,7 @@
 Solution::Solution()
 {
     isValid = false;
-    distFitness = 0;
-    travelTimeFitness = 0;
+    instance = nullptr;
 }
 
 /**
@@ -38,4 +37,32 @@ bool Solution::producersCycling() const
     }
 
     return cycleFound;
+}
+
+bool Solution::evalSolution(MiddleCost &c) const
+{
+    // On vérifie la validité de la solution
+    if (!isValid)
+    {
+        return false;
+    }
+
+    // Si la solution est valide, on calcule les coûts moyens
+    c.distanceCost = 0;
+    c.travelTimeCost = 0;
+
+    for (const auto &route: routes)
+    {
+        std::vector<Node> fullRoute = route.getRoute();
+        for (auto it = fullRoute.begin(); it != std::prev(fullRoute.end()); ++it)
+        {
+            if (std::next(it) != fullRoute.end())
+            {
+                c.distanceCost += instance->getDistance(*it, *std::next(it));
+                c.travelTimeCost += instance->getTravelTime(*it, *std::next(it));
+            }
+        }
+    }
+
+    return true;
 }

@@ -13,12 +13,6 @@
 
 using json = nlohmann::json;
 
-struct MiddleCost
-{
-    double travelTimeCost;
-    double distanceCost;
-};
-
 typedef EA::Genetic<Solution, MiddleCost> GAType;
 typedef EA::GenerationType<Solution, MiddleCost> GenerationType;
 
