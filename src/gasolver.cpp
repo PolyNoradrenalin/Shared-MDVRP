@@ -2,6 +2,8 @@
 
 void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
 {
+    p.instance = &instance;
+
     // Création des générateurs de nombres aléatoires
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -119,27 +121,10 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
 
 bool GASolver::evalSolution(const Solution &p, MiddleCost &c)
 {
-    // On vérifie la validité de la solution
-    if (!p.isValid)
-    {
+    bool valid = p.evalSolution(c);
+
+    if (!valid) {
         return false;
-    }
-
-    // Si la solution est valide, on calcule les coûts moyens
-    c.distanceCost = 0;
-    c.travelTimeCost = 0;
-
-    for (const auto &route: p.routes)
-    {
-        std::vector<Node> fullRoute = route.getRoute();
-        for (auto it = fullRoute.begin(); it != std::prev(fullRoute.end()); ++it)
-        {
-            if (std::next(it) != fullRoute.end())
-            {
-                c.distanceCost += instance.getDistance(*it, *std::next(it));
-                c.travelTimeCost += instance.getTravelTime(*it, *std::next(it));
-            }
-        }
     }
 
     if (isVerbose)

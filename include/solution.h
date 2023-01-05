@@ -9,6 +9,12 @@
 #include <iostream>
 #include <stack>
 
+struct MiddleCost
+{
+    double travelTimeCost;
+    double distanceCost;
+};
+
 typedef boost::adjacency_matrix<boost::directedS> Graph;
 typedef std::exception cycle_exception;
 
@@ -33,12 +39,10 @@ class Solution
 public:
     // Détermine si la solution est valide.
     bool isValid = false;
-    // La valeur de fitness correspondant à la distance.
-    double distFitness = 0;
-    // La valeur de fitness correspondant au temps nécessaire pour parcourir la route.
-    double travelTimeFitness = 0;
     // Routes des producteurs.
     std::vector<Route> routes;
+    // Instance de la solution.
+    Instance* instance;
 
     /**
      * Constructeur de l'objet Solution.
@@ -51,6 +55,13 @@ public:
      * @return<b>true</b> s'il y a un cycle (interlocking), <b>false</b>sinon
      */
     bool producersCycling() const;
+
+    /**
+     * Évalue la solution.
+     * @param c Fitness de la solution
+     * @return <b>true</b> si la solution est valide, <b>false</b> sinon
+     */
+    bool evalSolution(MiddleCost &c) const;
 };
 
 #endif //S_MDVRP_SOLUTION_H
