@@ -170,7 +170,20 @@ Solution GASolver::mutate(const Solution &X_base, const std::function<double(voi
     // Random suppression
     for (int prodIndex = 0; prodIndex < int(instance.getProducers().size()); prodIndex++)
     {
+        bool useProducerRoute = (rnd01() < 0.5);
 
+        std::vector<Node> r;
+        r = (useProducerRoute ? X_base.routes.at(prodIndex).prodRoute : X_base.routes.at(prodIndex).clientRoute);
+        if (!r.empty())
+        {
+            // Enlever un endroit dans la route aléatoire
+            int removeIndex = randomIntInInterval(0, int(r.size()) - 1, rnd01);
+            r.erase(r.begin() + removeIndex);
+
+            // Remplacer l'ancienne route par la nouvelle
+            useProducerRoute ? offspring.routes.at(prodIndex).prodRoute = r : offspring.routes.at(
+                    prodIndex).clientRoute = r;
+        }
     }
     offspring.cleanSolution();
 

@@ -49,11 +49,11 @@ getRandomIntDistribution(int minVal, int maxVal, const std::vector<int>& exclude
 std::vector<Node> removeDuplicatesInVector(std::vector<Node> vector);
 
 /**
- * Retourne un entier aléatoire entre deux entiers a et b
+ * Retourne un entier aléatoire entre deux entiers [a et b], bornes comprises.
  * @param a Borne inférieure de la valeur de retour
  * @param b Borne supérieure de la valeur de retour
  * @param rnd01 Fonction aléatoire donnant un nombre aléatoire entre 0 et 1
- * @return Entier aléatoire entre a et b
+ * @return Entier aléatoire entre [a et b]
  */
 int randomIntInInterval(int a, int b, const std::function<double(void)> &rnd01);
 
