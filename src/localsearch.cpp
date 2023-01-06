@@ -1,9 +1,4 @@
-//
-// Created by noepe on 05/01/2023.
-//
-
 #include "localsearch.h"
-
 #include <utility>
 
 LocalSearch::LocalSearch(function<void(Solution &)> &editFunction)

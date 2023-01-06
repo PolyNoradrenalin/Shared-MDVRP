@@ -11,10 +11,17 @@ using std::function;
 class LocalSearch
 {
 protected:
+
     function<void(Solution &)> editFunction;
 
 public:
+    /**
+     * Constructeur de la classe LocalSearch. Initialise la fonction d'édition de solution.
+     */
     explicit LocalSearch(function<void(Solution &)> &editFunction);
+    /**
+     * Effectue une recherche locale sur la solution passée en paramètre.
+     */
     virtual Solution search(Solution &s) = 0;
 };
 
@@ -24,7 +31,13 @@ public:
 class FirstImprovement : public LocalSearch
 {
 public:
+    /**
+     * Constructeur de la classe FirstImprovement. Initialise la fonction d'édition de solution.
+     */
     explicit FirstImprovement(function<void(Solution &)> &editFunction);
+    /**
+     * Effectue une recherche locale sur la solution passée en paramètre et s'arrête à la première meilleure solution trouvée.
+     */
     Solution search(Solution &s) override;
 };
 
