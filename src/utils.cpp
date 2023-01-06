@@ -1,10 +1,18 @@
 #include "utils.h"
 
-bool isSolutionValid(const Solution &solution, const Instance& instance)
+bool isSolutionValid(const Solution &solution, const Instance &instance)
 {
-    return !solution.producersCycling() && getInvalidRoutesIfAny(solution, instance).empty();
-}
+    auto routePairs = getInvalidRoutesIfAny(solution, instance);
+    for (const auto& rp: routePairs)
+    {
+        if (!rp.second.empty())
+        {
+            return false;
+        }
+    }
 
+    return !solution.producersCycling();
+}
 
 std::vector<std::pair<Route, std::vector<Node>>> getInvalidRoutesIfAny(const Solution &solution, const Instance &i)
 {
@@ -36,7 +44,7 @@ std::vector<std::pair<Route, std::vector<Node>>> getInvalidRoutesIfAny(const Sol
                 }
             }
         }
-
+        deliveredList = removeDuplicatesInVector(deliveredList);
         // On regarde si le producteur P1 a bien livré à tous les clients
         if (deliveredList.size() == i.getClients().size())
         {
@@ -87,31 +95,6 @@ std::discrete_distribution<> getRandomIntDistribution(int minVal, int maxVal, co
     return distribution;
 }
 
-std::vector<Node> removeSideBySideDuplicatesInVector(const std::vector<Node> &vector)
-{
-    // On transforme le vector en std::list car il est beaucoup plus performant pour y effacer des éléments
-    // O(n) pour vector et O(1) pour list
-    // Source: https://stackoverflow.com/a/11599470
-    std::list<Node> dest(vector.begin(), vector.end());
-
-    // Itérer sur chaque élément et le comparer à celui d'après
-    for (auto it = dest.begin(); it != dest.end(); ++it)
-    {
-        // On vérifie qu'il y a bien un élément à l'indice 'n+1'
-        if (dest.size() > 1 && std::distance(dest.begin(), it) != dest.size())
-        {
-            if (it->id == std::next(it)->id)
-            {
-                // Si l'élément 'n' est identique à l'élément 'n+1', on efface celui à l'indice n et on recule le pointeur d'un indice
-                it = dest.erase(it);
-                it = std::prev(it);
-            }
-        }
-    }
-
-    return std::vector<Node>{std::begin(dest), std::end(dest)};
-}
-
 std::vector<Node> removeDuplicatesInVector(std::vector<Node> vector)
 {
     // On effectue un tri par ordre croissant selon les ids de chaque Node
@@ -142,24 +125,25 @@ std::vector<Route> fixInvalidRoutes(const Solution &p, const Instance &instance)
     std::vector<Route> fixedRoutes;
     // Cette variable permet de déterminer pour chaque producteur, quels clients n'ont pas été livrés
     auto missingClientsPerProducer = getInvalidRoutesIfAny(p, instance);
+
     int routeIndex = 0;
 
     // On itère sur chaque paire <route, liste des clients non-livrés> pour les ajouter à la route
     for (const auto &clientPair: missingClientsPerProducer)
     {
-        if (p.routes.size() <= routeIndex)
-        {
-            std::cerr << "An error has occurred during the reparation of initialized solution." << std::endl;
-            throw std::exception();
-        }
-        std::vector<Node> clientsRoute = p.routes[routeIndex].clientRoute;
-
         if (clientPair.second.empty())
         {
             fixedRoutes.push_back(clientPair.first);
             continue;
         }
 
+        if (p.routes.size() <= routeIndex)
+        {
+            std::cerr << "An error has occurred during the reparation of initialized solution." << std::endl;
+            throw std::exception();
+        }
+
+        std::vector<Node> clientsRoute = p.routes[routeIndex].clientRoute;
         for (Node missingClient: clientPair.second)
         {
             clientsRoute.push_back(missingClient);

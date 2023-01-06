@@ -62,6 +62,11 @@ public:
      * @return <b>true</b> si la solution est valide, <b>false</b> sinon
      */
     bool evalSolution(MiddleCost &c) const;
+
+    /**
+     * Enlève les destinations doublons dans chaque route de la solution.
+     */
+    void cleanSolution();
 };
 
 #endif //S_MDVRP_SOLUTION_H

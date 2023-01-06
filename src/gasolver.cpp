@@ -46,8 +46,8 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
             prodRoute.push_back(instance.getProducers().at(distrib(gen)));
         }
 
-        // Enlever les doublons côte à côte de la liste (un trajet d'un point A au même point A est considéré comme instantané)
-        prodRoute = removeSideBySideDuplicatesInVector(prodRoute);
+        // Enlever les doublons de la liste pour améliorer la solution
+        prodRoute = removeDuplicatesInVector(prodRoute);
 
         // Route de livraison aux clients
         std::vector<Node> clientRoute;
@@ -70,8 +70,8 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
             clientRoute.push_back(instance.getClients().at(distrib(gen)));
         }
 
-        // Enlever les doublons côte à côte de la liste (un trajet d'un point A au même point A est considéré comme instantané)
-        clientRoute = removeSideBySideDuplicatesInVector(clientRoute);
+        // Enlever les doublons de la liste pour améliorer la solution
+        clientRoute = removeDuplicatesInVector(clientRoute);
 
         routes.emplace_back(prodRoute, clientRoute);
     }
@@ -80,9 +80,11 @@ void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
     p.routes = routes;
 
     // TODO: Allow for the option to accept invalid solutions in initialisation
-    std::vector<Route> fixedRoutes = fixInvalidRoutes(p, instance);
+    // On s'assure que la solution soit valide en ajoutant les routes manquantes
     // On ajoute la route réparée à la solution p
-    p.routes = fixedRoutes;
+    p.routes = fixInvalidRoutes(p, instance);
+
+    p.cleanSolution();
 
     // Si pas de cycles, on indique la solution comme valide
     p.isValid = p.producersCycling();
@@ -123,7 +125,8 @@ bool GASolver::evalSolution(const Solution &p, MiddleCost &c)
 {
     bool valid = p.evalSolution(c);
 
-    if (!valid) {
+    if (!valid)
+    {
         return false;
     }
 
@@ -139,8 +142,8 @@ bool GASolver::evalSolution(const Solution &p, MiddleCost &c)
 
 Solution GASolver::mutate(const Solution &X_base, const std::function<double(void)> &rnd01, double shrink_scale)
 {
-    // Exchange Mutation
     Solution offspring = X_base;
+    // Exchange Mutation
     // On effectue la mutation sur chaque route
     for (int prodIndex = 0; prodIndex < int(instance.getProducers().size()); prodIndex++)
     {
@@ -163,6 +166,16 @@ Solution GASolver::mutate(const Solution &X_base, const std::function<double(voi
                     prodIndex).clientRoute = r;
         }
     }
+
+    // Random suppression
+    for (int prodIndex = 0; prodIndex < int(instance.getProducers().size()); prodIndex++)
+    {
+
+    }
+    offspring.cleanSolution();
+
+    offspring.routes = fixInvalidRoutes(offspring, instance);
+
     offspring.isValid = isSolutionValid(offspring, instance);
 
     return offspring;
@@ -250,12 +263,11 @@ Solution GASolver::crossover(const Solution &X1, const Solution &X2, const std::
         useProducerRoute ? offspring.routes.at(prodIndex1).prodRoute = r : offspring.routes.at(
                 prodIndex1).clientRoute = r;
     }
+    offspring.cleanSolution();
 
-    std::vector<Route> fixedRoutes = fixInvalidRoutes(offspring, instance);
-    offspring.routes = fixedRoutes;
+    offspring.routes = fixInvalidRoutes(offspring, instance);
 
     offspring.isValid = isSolutionValid(offspring, instance);
-
     return offspring;
 }
 

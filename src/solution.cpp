@@ -66,3 +66,10 @@ bool Solution::evalSolution(MiddleCost &c) const
 
     return true;
 }
+
+void Solution::cleanSolution()
+{
+    for (auto &r: routes) {
+        r.cleanRoute();
+    }
+}

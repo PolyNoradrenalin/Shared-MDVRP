@@ -1,4 +1,5 @@
 #include "route.h"
+#include "utils.h"
 
 Route::Route()
 {
@@ -18,4 +19,10 @@ std::vector<Node> Route::getRoute() const
     route.insert(route.end(), clientRoute.begin(), clientRoute.end());
 
     return route;
+}
+
+void Route::cleanRoute()
+{
+    this->clientRoute = removeDuplicatesInVector(this->clientRoute);
+    this->prodRoute = removeDuplicatesInVector(this->prodRoute);
 }

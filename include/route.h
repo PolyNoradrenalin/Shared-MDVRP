@@ -29,6 +29,11 @@ public:
     Route(std::vector<Node> const &prodRoute, std::vector<Node> const &clientRoute);
 
     [[nodiscard]] std::vector<Node> getRoute() const;
+
+    /**
+     * Permet d'enlever les destinations doublons de cette route.
+     */
+    void cleanRoute();
 };
 
 

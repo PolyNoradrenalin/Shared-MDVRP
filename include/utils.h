@@ -42,13 +42,6 @@ std::discrete_distribution<>
 getRandomIntDistribution(int minVal, int maxVal, const std::vector<int>& excludedVals);
 
 /**
- * Filtre un vector de Nodes en enlevant les doublons qui sont côte-à-côte.
- * @param vector Vecteur à filtrer
- * @return Vecteur filtré
- */
-std::vector<Node> removeSideBySideDuplicatesInVector(const std::vector<Node> &vector);
-
-/**
  * Filtre un vector de Nodes en enlevant les doublons.
  * @param vector Vecteur à filtrer
  * @return Vecteur filtré, sans doublons
