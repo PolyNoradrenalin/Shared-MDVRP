@@ -16,15 +16,13 @@ import numpy as np
 
 #######################################################################################
 
-nombre_prod = 10
-nombre_client = 50
 nom_fichier = ""
 path = "../instances/"
 os.makedirs(path, exist_ok=True)
 
 #######################################################################################
 
-def T1(file):
+def T1(file, nombre_prod, nombre_client):
     # rempli la matrice de distance
     coord = [[] for l in range(nombre_prod + nombre_client)]
     for l in range(0, nombre_prod):
@@ -59,7 +57,7 @@ def T1(file):
         file.write(str(coord[n][1]) + "\n")
     return coord
 
-def T2(file):
+def T2(file, nombre_prod, nombre_client):
     # rempli la matrice de distance
     coord = [[] for l in range(nombre_prod + nombre_client)]
     for l in range(0, nombre_prod):
@@ -94,7 +92,7 @@ def T2(file):
         file.write(str(coord[n][1]) + "\n")
     return coord
 
-def T3(file):
+def T3(file, nombre_prod, nombre_client):
     # rempli la matrice de distance
     coord = [[] for l in range(nombre_prod + nombre_client)]
     for l in range(0, nombre_prod):
@@ -127,7 +125,7 @@ def T3(file):
         file.write(str(coord[n][1]) + "\n")
     return coord
 
-def TR(file):
+def TR(file, nombre_prod, nombre_client):
     # rempli la matrice de distance
     coord = [[] for l in range(nombre_prod + nombre_client)]
     for l in range(0, nombre_prod):
@@ -156,7 +154,7 @@ def TR(file):
         file.write(str(coord[n][1]) + "\n")
     return coord
 
-def TA(file, coord):
+def TA(file, coord, nombre_prod, nombre_client):
     for j in range(0, nombre_prod + nombre_client):
         x_a = coord[j][0]
         y_a = coord[j][1]
@@ -171,7 +169,7 @@ def TA(file, coord):
             file.write(str(round(travelTime)) + " ")
         file.write("\n")
 
-def TB(file, coord):
+def TB(file, coord, nombre_prod, nombre_client):
     for j in range(0, nombre_prod + nombre_client):
         x_a = coord[j][0]
         y_a = coord[j][1]
@@ -189,7 +187,7 @@ def TB(file, coord):
             file.write(str(round(travelTime)) + " ")
         file.write("\n")
 
-def TC(file, coord):
+def TC(file, coord, nombre_prod, nombre_client):
     for j in range(0, nombre_prod + nombre_client):
         x_a = coord[j][0]
         y_a = coord[j][1]
@@ -207,7 +205,7 @@ def TC(file, coord):
 distTypes = [T1, T2, T3, TR]
 travelTimeTypes = [TA, TB, TC]
 
-def get_file_name(index: int, distanceType: str, travelTimeType: str):
+def get_file_name(index: int, distanceType: str, travelTimeType: str, nombre_prod, nombre_client):
     fName = "I_"
     if len(str(nombre_prod)) < 2:
         fName += "0" + str(nombre_prod) + "_"
@@ -221,20 +219,22 @@ def get_file_name(index: int, distanceType: str, travelTimeType: str):
 
     return fName
 
+sizes = [(3, 5), (5, 10), (10, 20), (10, 50)]
 def generate_instances(instance_count: int):
     for i in range(4):
         for j in range(3):
-            for instance_index in range(instance_count):
-                fileName = get_file_name(instance_index, distTypes[i].__name__, travelTimeTypes[j].__name__)
+            for (nombre_prod, nombre_client) in sizes:
+                for instance_index in range(instance_count):
+                    fileName = get_file_name(instance_index, distTypes[i].__name__, travelTimeTypes[j].__name__, nombre_prod, nombre_client)
 
-                # creer le fichier dans le repertoire data
-                f = open(path + fileName, "w")
-                f.write(str(nombre_prod) + "\n")
-                f.write(str(nombre_client) + "\n")
+                    # creer le fichier dans le repertoire data
+                    f = open(path + fileName, "w")
+                    f.write(str(nombre_prod) + "\n")
+                    f.write(str(nombre_client) + "\n")
 
-                coords = distTypes[i](f)
-                travelTimeTypes[j](f, coords)
+                    coords = distTypes[i](f, nombre_prod, nombre_client)
+                    travelTimeTypes[j](f, coords, nombre_prod, nombre_client)
 
-                f.close()
+                    f.close()
 
 generate_instances(10)
