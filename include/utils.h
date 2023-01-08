@@ -6,7 +6,7 @@
 #include <iostream>
 #include <list>
 #include <functional>
-
+#include <fstream>
 /**
  * Vérifie si la solution est valide.
  * @param solution Solution à vérifier
@@ -62,4 +62,10 @@ int randomIntInInterval(int a, int b, const std::function<double(void)> &rnd01);
  */
 Solution getSimpleSolution(const Instance& instance);
 
+/**
+ * Exporte une solution dans un fichier.
+ * @param solution
+ * @param filename
+ */
+void exportSolution(const Solution& solution, const std::string& filename);
 #endif //S_MDVRP_UTILS_H

@@ -176,3 +176,24 @@ Solution getSimpleSolution(const Instance& instance) {
 
     return sol;
 }
+
+
+void exportSolution(const Solution& solution, const std::string& filename) {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error while opening file " << filename << std::endl;
+        throw std::exception();
+    }
+
+    file << solution.routes.size() << std::endl;
+    for (const auto& route : solution.routes) {
+        for (const auto& node : route.prodRoute) {
+            file << node.id << " ";
+        }
+        for (const auto& node : route.clientRoute) {
+            file << node.id << " ";
+        }
+        file << std::endl;
+    }
+    file.close();
+}
