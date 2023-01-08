@@ -143,9 +143,10 @@ bool GASolver::evalSolution(const Solution &p, MiddleCost &c)
 Solution GASolver::mutate(const Solution &X_base, const std::function<double(void)> &rnd01, double shrink_scale)
 {
     Solution offspring = X_base;
+    int nbProds = instance.getProducers().size();
     // Exchange Mutation
     // On effectue la mutation sur chaque route
-    for (int prodIndex = 0; prodIndex < int(instance.getProducers().size()); prodIndex++)
+    for (int prodIndex = 0; prodIndex < nbProds; prodIndex++)
     {
         bool useProducerRoute = (rnd01() < 0.5);
 
@@ -168,7 +169,7 @@ Solution GASolver::mutate(const Solution &X_base, const std::function<double(voi
     }
 
     // Random suppression
-    for (int prodIndex = 0; prodIndex < int(instance.getProducers().size()); prodIndex++)
+    for (int prodIndex = 0; prodIndex < nbProds; prodIndex++)
     {
         bool useProducerRoute = (rnd01() < 0.5);
 
