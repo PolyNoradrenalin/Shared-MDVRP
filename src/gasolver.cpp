@@ -323,8 +323,9 @@ GAType &GASolver::solveProblem(Instance inst, const std::string &jsonFilePath)
     gaObj->multi_threading = true;
     gaObj->idle_delay_us = 1; // switch between threads quickly
     gaObj->verbose = false;
-    gaObj->best_stall_max = 40;
-    gaObj->average_stall_max = 40;
+    // Force le GA à faire 100 itérations
+    gaObj->best_stall_max = 100;
+    gaObj->average_stall_max = 100;
     gaObj->population = params.value("population", 40);
     gaObj->generation_max = params.value("generation_max", 1000);
     gaObj->calculate_SO_total_fitness = calculateSOObjectives;
