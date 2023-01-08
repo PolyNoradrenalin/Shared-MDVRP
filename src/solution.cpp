@@ -49,7 +49,6 @@ bool Solution::evalSolution(MiddleCost &c) const
 
     // Si la solution est valide, on calcule les coûts moyens
     c.distanceCost = 0;
-    c.travelTimeCost = 0;
 
     for (const auto &route: routes)
     {
@@ -59,7 +58,6 @@ bool Solution::evalSolution(MiddleCost &c) const
             if (std::next(it) != fullRoute.end())
             {
                 c.distanceCost += instance->getDistance(*it, *std::next(it));
-                c.travelTimeCost += instance->getTravelTime(*it, *std::next(it));
             }
         }
     }

@@ -54,9 +54,12 @@ private:
 
     static std::vector<double> calculateMOObjectives(const GAType::thisChromosomeType &X);
 
+    static double calculateSOObjectives(const GAType::thisChromosomeType &X);
+
     static void
-    MOReportGeneration(int generation_number, const EA::GenerationType<Solution, MiddleCost> &last_generation,
-                       const std::vector<unsigned int> &pareto_front);
+    MOReportGeneration(int generation_number,
+                       const EA::GenerationType<Solution, MiddleCost> &last_generation,
+                       const Solution &best_genes);
 
 public:
     inline static Instance instance = Instance(std::vector<Node>(), std::vector<Node>(), Matrix2D<int>(),
@@ -66,7 +69,7 @@ public:
 
     inline static double biCriteriaRatio = 0.5;
 
-    static GAType &solveProblem(Instance instance, const std::string& jsonFilePath);
+    static GAType &solveProblem(Instance instance, const std::string &jsonFilePath);
 };
 
 #endif //S_MDVRP_GASOLVER_H

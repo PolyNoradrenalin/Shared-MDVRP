@@ -219,7 +219,7 @@ def get_file_name(index: int, distanceType: str, travelTimeType: str, nombre_pro
 
     return fName
 
-sizes = [(3, 5), (5, 10), (10, 20), (10, 50)]
+sizes = [(3, 5), (5, 10), (8, 15)]
 def generate_instances(instance_count: int):
     for i in range(4):
         for j in range(3):

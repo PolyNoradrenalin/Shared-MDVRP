@@ -11,7 +11,6 @@
 
 struct MiddleCost
 {
-    double travelTimeCost;
     double distanceCost;
 };
 

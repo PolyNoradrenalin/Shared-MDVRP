@@ -134,7 +134,6 @@ bool GASolver::evalSolution(const Solution &p, MiddleCost &c)
     {
         std::cout << "Solution Fitness: " << std::endl;
         std::cout << "Distance Cost: " << c.distanceCost << std::endl;
-        std::cout << "Travel Time Cost: " << c.travelTimeCost << std::endl;
     }
 
     return true;
@@ -143,38 +142,32 @@ bool GASolver::evalSolution(const Solution &p, MiddleCost &c)
 Solution GASolver::mutate(const Solution &X_base, const std::function<double(void)> &rnd01, double shrink_scale)
 {
     Solution offspring = X_base;
-    int nbProds = instance.getProducers().size();
-    // Exchange Mutation
+    int nbProds = (int) instance.getProducers().size();
     // On effectue la mutation sur chaque route
     for (int prodIndex = 0; prodIndex < nbProds; prodIndex++)
     {
         bool useProducerRoute = (rnd01() < 0.5);
-
         std::vector<Node> r;
         r = (useProducerRoute ? X_base.routes.at(prodIndex).prodRoute : X_base.routes.at(prodIndex).clientRoute);
-        // Appliquer la mutation sur les producteurs
-        if (r.size() > 1)
-        {
-            // Récupérer deux indices pour la mutation par échange
-            int index1 = randomIntInInterval(0, int(r.size()) - 1, rnd01);
-            int index2 = randomIntInInterval(0, int(r.size()) - 1, rnd01);
 
-            // Faire la mutation
-            std::iter_swap(r.begin() + index1, r.begin() + index2);
+        // Exchange Mutation
+        // Appliquer la mutation par échange
+        // Enlever les commentaires pour activer cette mutation
+//        if (r.size() > 1)
+//        {
+//            // Récupérer deux indices pour la mutation par échange
+//            int index1 = randomIntInInterval(0, int(r.size()) - 1, rnd01);
+//            int index2 = randomIntInInterval(0, int(r.size()) - 1, rnd01);
+//
+//            // Faire la mutation
+//            std::iter_swap(r.begin() + index1, r.begin() + index2);
+//
+//            // Remplacer l'ancienne route par la nouvelle
+//            useProducerRoute ? offspring.routes.at(prodIndex).prodRoute = r : offspring.routes.at(
+//                    prodIndex).clientRoute = r;
+//        }
 
-            // Remplacer l'ancienne route par la nouvelle
-            useProducerRoute ? offspring.routes.at(prodIndex).prodRoute = r : offspring.routes.at(
-                    prodIndex).clientRoute = r;
-        }
-    }
-
-    // Random suppression
-    for (int prodIndex = 0; prodIndex < nbProds; prodIndex++)
-    {
-        bool useProducerRoute = (rnd01() < 0.5);
-
-        std::vector<Node> r;
-        r = (useProducerRoute ? X_base.routes.at(prodIndex).prodRoute : X_base.routes.at(prodIndex).clientRoute);
+        // Mutation par suppression
         if (!r.empty())
         {
             // Enlever un endroit dans la route aléatoire
@@ -201,115 +194,118 @@ Solution GASolver::crossover(const Solution &X1, const Solution &X2, const std::
     Solution offspring = X1;
     int size = int(instance.getProducers().size());
 
-    for (int i = 0; i < size; i++)
+
+    // On récupère une route aléatoire pour effectuer le crossover
+    int prodIndex1 = randomIntInInterval(0, size - 1, rnd01);
+    int prodIndex2 = randomIntInInterval(0, size - 1, rnd01);
+
+    std::vector<Node> r1;
+    std::vector<Node> r2;
+    bool useProducerRoute = (rnd01() < 0.5);
+
+    if (useProducerRoute)
     {
-        // On récupère une route aléatoire pour effectuer le crossover
-        int prodIndex1 = randomIntInInterval(0, size - 1, rnd01);
-        int prodIndex2 = randomIntInInterval(0, size - 1, rnd01);
+        // Appliquer le crossover à la route de livraison aux producteurs
+        r1 = X1.routes.at(prodIndex1).prodRoute;
+        r2 = X2.routes.at(prodIndex2).prodRoute;
+    } else
+    {
+        // Appliquer le crossover à la route de livraison aux clients
+        r1 = X1.routes.at(prodIndex1).clientRoute;
+        r2 = X2.routes.at(prodIndex2).clientRoute;
+    }
 
-        std::vector<Node> r1;
-        std::vector<Node> r2;
-        bool useProducerRoute = (rnd01() < 0.5);
+    // Si r1 vide, on va forcément utiliser r2
+    if (r1.empty())
+    {
+        useProducerRoute ? offspring.routes.at(prodIndex1).prodRoute = r2 : offspring.routes.at(
+                prodIndex1).clientRoute = r2;
 
-        if (useProducerRoute)
+        offspring.cleanSolution();
+        offspring.routes = fixInvalidRoutes(offspring, instance);
+        offspring.isValid = isSolutionValid(offspring, instance);
+
+        return offspring;
+    }
+
+    std::vector<Node> r = r1;
+
+    // On récupère le dernier indice de la plus petite des deux routes
+    int substringUpperBounds = std::max(std::min(int(r1.size()) - 1, int(r2.size()) - 1), 0);
+
+    // On récupère les deux indices permettant l'Ordered Crossover tels que : 0 <= index1 <= index2 <= substringUpperBounds
+    int index1 = randomIntInInterval(0, substringUpperBounds, rnd01);
+    int index2 = randomIntInInterval(index1, substringUpperBounds, rnd01);
+
+    // On copie le substring de r1 vers r
+    std::vector<Node> substring = {r1.begin() + index1, r1.begin() + index2 + 1};
+
+    // On enlève tous les éléments de r après index2
+    r = {r.begin(), r.begin() + index2 + 1};
+
+    // Itérer dans r2 et enlever une fois chaque élément de substring s'il existe
+    for (const auto &elem: substring)
+    {
+        auto it = std::find(r2.begin(), r2.end(), elem);
+
+        if (it != r2.end())
         {
-            // Appliquer le crossover à la route de livraison aux producteurs
-            r1 = X1.routes.at(prodIndex1).prodRoute;
-            r2 = X2.routes.at(prodIndex2).prodRoute;
+            r2.erase(it);
+        }
+    }
+
+    // On complète les Nodes de r en dehors du substring par ceux de r2
+    int rCounter = 0;
+    for (const auto &elem: r2)
+    {
+        if (rCounter < index1)
+        {
+            // Remplacer élément si l'indice rCounter se situe avant les nodes de substring
+            r[rCounter] = elem;
+            rCounter++;
         } else
         {
-            // Appliquer le crossover à la route de livraison aux clients
-            r1 = X1.routes.at(prodIndex1).clientRoute;
-            r2 = X2.routes.at(prodIndex2).clientRoute;
+            // Sinon l'ajouter à la fin de la route
+            r.push_back(elem);
         }
-
-        // Si r1 vide, on va forcément utiliser r2
-        if (r1.empty())
-        {
-            useProducerRoute ? offspring.routes.at(prodIndex1).prodRoute = r2 : offspring.routes.at(
-                    prodIndex1).clientRoute = r2;
-            return offspring;
-        }
-
-        std::vector<Node> r = r1;
-
-        // On récupère le dernier indice de la plus petite des deux routes
-        int substringUpperBounds = std::max(std::min(int(r1.size()) - 1, int(r2.size()) - 1), 0);
-
-        // On récupère les deux indices permettant l'Ordered Crossover tels que : 0 <= index1 <= index2 <= substringUpperBounds
-        int index1 = randomIntInInterval(0, substringUpperBounds, rnd01);
-        int index2 = randomIntInInterval(index1, substringUpperBounds, rnd01);
-
-        // On copie le substring de r1 vers r
-        std::vector<Node> substring = {r1.begin() + index1, r1.begin() + index2 + 1};
-
-        // On enlève tous les éléments de r après index2
-        r = {r.begin(), r.begin() + index2 + 1};
-
-        // Itérer dans r2 et enlever une fois chaque élément de substring s'il existe
-        for (const auto &elem: substring)
-        {
-            auto it = std::find(r2.begin(), r2.end(), elem);
-
-            if (it != r2.end())
-            {
-                r2.erase(it);
-            }
-        }
-
-        // On complète les Nodes de r en dehors du substring par ceux de r2
-        int rCounter = 0;
-        for (const auto &elem: r2)
-        {
-            if (rCounter < index1)
-            {
-                // Remplacer élément si l'indice rCounter se situe avant les nodes de substring
-                r[rCounter] = elem;
-                rCounter++;
-            } else
-            {
-                // Sinon l'ajouter à la fin de la route
-                r.push_back(elem);
-            }
-        }
-
-        // Insérer la nouvelle route dans le descendant
-        useProducerRoute ? offspring.routes.at(prodIndex1).prodRoute = r : offspring.routes.at(
-                prodIndex1).clientRoute = r;
     }
+
+    // Insérer la nouvelle route dans le descendant
+    useProducerRoute ? offspring.routes.at(prodIndex1).prodRoute = r : offspring.routes.at(
+            prodIndex1).clientRoute = r;
+
     offspring.cleanSolution();
-
     offspring.routes = fixInvalidRoutes(offspring, instance);
-
     offspring.isValid = isSolutionValid(offspring, instance);
+
     return offspring;
 }
 
 std::vector<double> GASolver::calculateMOObjectives(const EA::Genetic<Solution, MiddleCost>::thisChromosomeType &X)
 {
     return {
-            X.middle_costs.distanceCost,
-            X.middle_costs.travelTimeCost
+            X.middle_costs.distanceCost
     };
 }
 
-void GASolver::MOReportGeneration(int generation_number, const GenerationType &last_generation,
-                                  const std::vector<unsigned int> &pareto_front)
+double GASolver::calculateSOObjectives(const EA::Genetic<Solution, MiddleCost>::thisChromosomeType &X)
+{
+    return X.middle_costs.distanceCost;
+}
+
+void GASolver::MOReportGeneration(int generation_number,
+                                  const EA::GenerationType<Solution, MiddleCost> &last_generation,
+                                  const Solution &best_genes)
 {
     (void) last_generation;
 
     std::cout << "Generation [" << generation_number << "], ";
     std::cout << "Pareto-Front {" << std::endl;
 
-    for (unsigned int i = 0; i < pareto_front.size(); i++)
-    {
-        std::cout << (i > 0 ? "," : "");
-        std::cout << "Individual: " << pareto_front[i] << std::endl;
-        std::cout << "Distance: " << last_generation.chromosomes.at(pareto_front[i]).middle_costs.distanceCost
-                  << std::endl;
-        std::cout << "Travel time: " << last_generation.chromosomes.at(pareto_front[i]).middle_costs.travelTimeCost
-                  << std::endl;
-    }
+    std::cout << "Individual: " << std::endl;
+    std::cout << "Distance: "
+              << last_generation.chromosomes[last_generation.best_chromosome_index].middle_costs.distanceCost
+              << std::endl;
     std::cout << "}" << std::endl;
 }
 
@@ -323,18 +319,20 @@ GAType &GASolver::solveProblem(Instance inst, const std::string &jsonFilePath)
     timer.tic();
     auto *gaObj = new GAType();
 
-    gaObj->problem_mode = EA::GA_MODE::NSGA_III;
+    gaObj->problem_mode = EA::GA_MODE::SOGA;
     gaObj->multi_threading = true;
     gaObj->idle_delay_us = 1; // switch between threads quickly
     gaObj->verbose = false;
+    gaObj->best_stall_max = 40;
+    gaObj->average_stall_max = 40;
     gaObj->population = params.value("population", 40);
     gaObj->generation_max = params.value("generation_max", 1000);
-    gaObj->calculate_MO_objectives = calculateMOObjectives;
+    gaObj->calculate_SO_total_fitness = calculateSOObjectives;
     gaObj->init_genes = initGenes;
     gaObj->eval_solution = evalSolution;
     gaObj->mutate = mutate;
     gaObj->crossover = crossover;
-    gaObj->MO_report_generation = MOReportGeneration;
+    gaObj->SO_report_generation = MOReportGeneration;
     gaObj->crossover_fraction = params.value("crossover_rate", 0.7);
     gaObj->mutation_rate = params.value("mutation_rate", 0.4);
     gaObj->solve();
