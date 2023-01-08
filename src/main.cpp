@@ -4,13 +4,21 @@
 
 int main()
 {
-    Parser parser("./instances/I_08_15_T1-TA_0.txt");
+    Parser parser("./instances/I_05_10_T1-TC_0.txt");
     Instance inst = parser.parse();
     std::cout << "INSTANCE LOADED" << std::endl;
-    GASolver::isVerbose = false;
     auto jsonPath = "params.json";
-    GASolver::solveProblem(inst, jsonPath);
 
+    GASolver::isVerbose = false;
+    GAType& sol = GASolver::solveProblem(inst, jsonPath);
+
+    Solution best = getSimpleSolution(inst);
+    best.isValid = isSolutionValid(best, inst);
+
+    MiddleCost simpleScore{};
+    best.evalSolution(simpleScore);
+
+    std::cout << "Simple solution score: " << simpleScore.distanceCost << std::endl;
 
     return 0;
 }

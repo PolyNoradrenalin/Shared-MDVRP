@@ -57,4 +57,9 @@ std::vector<Node> removeDuplicatesInVector(std::vector<Node> vector);
  */
 int randomIntInInterval(int a, int b, const std::function<double(void)> &rnd01);
 
+/**
+ * Retourne une solution triviale où un seul camion est utilisé pour livrer tous les clients.
+ */
+Solution getSimpleSolution(const Instance& instance);
+
 #endif //S_MDVRP_UTILS_H

@@ -156,3 +156,23 @@ std::vector<Route> fixInvalidRoutes(const Solution &p, const Instance &instance)
 
     return fixedRoutes;
 }
+
+Solution getSimpleSolution(const Instance& instance) {
+    Solution sol{};
+    sol.instance = &instance;
+
+    // We initialize the solution with the first route that goes to all the clients and the others producers going to the first producer
+    Route firstRoute{};
+    firstRoute.clientRoute = instance.getClients();
+    sol.routes.push_back(firstRoute);
+
+    Node firstProducer = instance.getProducers().at(0);
+
+    for (int i = 1; i < instance.getProducers().size(); i++) {
+        Route route{};
+        route.prodRoute.push_back(firstProducer);
+        sol.routes.push_back(route);
+    }
+
+    return sol;
+}

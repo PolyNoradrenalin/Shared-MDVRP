@@ -41,7 +41,7 @@ public:
     // Routes des producteurs.
     std::vector<Route> routes;
     // Instance de la solution.
-    Instance* instance;
+    const Instance* instance;
 
     /**
      * Constructeur de l'objet Solution.
