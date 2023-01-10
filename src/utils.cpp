@@ -195,5 +195,8 @@ void exportSolution(const Solution& solution, const std::string& filename) {
         }
         file << std::endl;
     }
+    MiddleCost cost{};
+    solution.evalSolution(cost);
+    file << cost.distanceCost << std::endl;
     file.close();
 }
