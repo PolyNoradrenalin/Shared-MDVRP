@@ -65,11 +65,11 @@ public:
     inline static Instance instance = Instance(std::vector<Node>(), std::vector<Node>(), Matrix2D<int>(),
                                                Matrix2D<int>());
 
+    inline static std::string filepath = "";
+
     inline static bool isVerbose = false;
 
-    inline static double biCriteriaRatio = 0.5;
-
-    static GAType &solveProblem(Instance instance, const std::string &jsonFilePath);
+    static GAType &solveProblem(Instance instance, const std::string &jsonFilePath, std::string filePath);
 };
 
 #endif //S_MDVRP_GASOLVER_H

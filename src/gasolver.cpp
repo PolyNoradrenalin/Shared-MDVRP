@@ -298,7 +298,7 @@ void GASolver::MOReportGeneration(int generation_number,
                                   const Solution &best_genes)
 {
     (void) last_generation;
-
+    exportSolution(best_genes, filepath + std::to_string(generation_number) + std::string(".csv"));
     std::cout << "Generation [" << generation_number << "], ";
     std::cout << "Pareto-Front {" << std::endl;
 
@@ -309,8 +309,9 @@ void GASolver::MOReportGeneration(int generation_number,
     std::cout << "}" << std::endl;
 }
 
-GAType &GASolver::solveProblem(Instance inst, const std::string &jsonFilePath)
+GAType &GASolver::solveProblem(Instance inst, const std::string &jsonFilePath, std::string filePath)
 {
+    filepath = filePath;
     instance = std::move(inst);
     std::ifstream f(jsonFilePath);
     json params = json::parse(f);
