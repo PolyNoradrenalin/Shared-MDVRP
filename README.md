@@ -31,6 +31,7 @@ Un exemple de ce fichier peut être trouvé dans le fichier `params.json` à la 
 ## Installation (source)
 > This installation is only for Windows. It should work on Linux distros with the appropriate installation
 > of the dependencies (Boost and Python).
+> 
 ### Boost
 For Windows, download the version 1.80.0 of Boost from [here](https://www.boost.org/users/history/version_1_80_0.html). Extract the archive and copy the folder to `C:\Program Files\boost_1_80_0`.
 
