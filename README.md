@@ -13,6 +13,7 @@ peut être téléchargé [ici](https://www.python.org/downloads/release/python-3
 Lorsque toutes les dépendances sont installées, vous pouvez construire le projet avec CMake.
 
 ## Utilisation
+> Pour le moment, les fichiers d'instances sont codés en dur dans le fichier `main.cpp`. Assurez-vous de changer le chemin vers les instances et de recompiler.
 Avant de lancer le .exe, vous devez avoir un fichier `params.json` dans le même répertoire que le .exe. 
 Ce fichier stocke la configuration de l'AG telle que la taille de la population ou le nombre de générations.
 Un exemple de ce fichier peut être trouvé dans le fichier `params.json` à la racine du projet.
@@ -40,6 +41,8 @@ can be downloaded [here](https://www.python.org/downloads/release/python-3109/).
 When all the dependencies are installed, you can build the project with CMake.
 
 ## Usage
+> For the moment, the instances file are hard-coded in the main.cpp file. Be sure to change the path to the instances and recompile.
+
 Before launching the .exe, you need a `params.json` file in the same directory as the .exe. 
 This file stores the configuration for the GA such as the number of generation or the population size.
 An example of this file can be found in the `params.json` file in the root directory.
