@@ -1,5 +1,7 @@
 #include "gasolver.h"
 
+#include <utility>
+
 void GASolver::initGenes(Solution &p, const std::function<double(void)> &rnd01)
 {
     p.instance = &instance;
@@ -298,7 +300,7 @@ void GASolver::MOReportGeneration(int generation_number,
                                   const Solution &best_genes)
 {
     (void) last_generation;
-    exportSolution(best_genes, filepath + std::to_string(generation_number) + std::string(".csv"));
+    exportSolution(best_genes, filepath + std::to_string(generation_number) + std::string(".txt"));
     std::cout << "Generation [" << generation_number << "], ";
     std::cout << "Pareto-Front {" << std::endl;
 
@@ -311,7 +313,7 @@ void GASolver::MOReportGeneration(int generation_number,
 
 GAType &GASolver::solveProblem(Instance inst, const std::string &jsonFilePath, std::string filePath)
 {
-    filepath = filePath;
+    filepath = std::move(filePath);
     instance = std::move(inst);
     std::ifstream f(jsonFilePath);
     json params = json::parse(f);
