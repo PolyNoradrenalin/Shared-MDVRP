@@ -1,24 +1,27 @@
 #include <iostream>
 #include "gasolver.h"
 #include "parser.h"
+#include <filesystem>
 
 int main()
 {
     std::vector<std::string> instancesPaths = {
-            "./instances/I_03_05_T1-TA_0.txt",
-            "./instances/I_03_05_T2-TA_0.txt",
-            "./instances/I_03_05_T3-TA_0.txt",
-            "./instances/I_05_10_T1-TA_0.txt",
-            "./instances/I_05_10_T2-TA_0.txt",
-            "./instances/I_05_10_T3-TA_0.txt",
-            "./instances/I_08_15_T1-TA_0.txt",
-            "./instances/I_08_15_T2-TA_0.txt",
-            "./instances/I_08_15_T3-TA_0.txt"
+            "I_03_05_T1-TA_0.txt",
+            "I_03_05_T2-TA_0.txt",
+            "I_03_05_TR-TA_0.txt",
+            "I_05_10_T1-TA_0.txt",
+            "I_05_10_T2-TA_0.txt",
+            "I_05_10_TR-TA_0.txt",
+            "I_08_15_T1-TA_0.txt",
+            "I_08_15_T2-TA_0.txt",
+            "I_08_15_TR-TA_0.txt"
     };
 
-    for (const std::string& path: instancesPaths)
+    std::filesystem::create_directories("./solutions");
+
+    for (const std::string &path: instancesPaths)
     {
-        Parser parser(path);
+        Parser parser("./instances/" + path);
         Instance inst = parser.parse();
         std::cout << "INSTANCE LOADED " << path << std::endl;
         auto jsonPath = "params.json";
@@ -34,7 +37,7 @@ int main()
 
         std::cout << "Simple solution score: " << simpleScore.distanceCost << std::endl;
 
-        exportSolution(best, path + "simpleSolution.txt");
+        exportSolution(best, "./solutions/" + path + "simpleSolution.txt");
     }
     return 0;
 }

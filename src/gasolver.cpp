@@ -300,7 +300,9 @@ void GASolver::MOReportGeneration(int generation_number,
                                   const Solution &best_genes)
 {
     (void) last_generation;
-    exportSolution(best_genes, filepath + std::to_string(generation_number) + std::string(".txt"));
+    exportSolution(best_genes, std::string("./solutions/") + filepath +
+                               std::string(3 - std::min(3, (int) std::to_string(generation_number).length()), '0') +
+                               std::to_string(generation_number));
     std::cout << "Generation [" << generation_number << "], ";
     std::cout << "Pareto-Front {" << std::endl;
 
